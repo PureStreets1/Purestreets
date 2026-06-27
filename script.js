@@ -52,8 +52,14 @@ if ('IntersectionObserver' in window) {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
 
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
       counters.forEach((counter) => {
         const target = Number(counter.dataset.count);
+        if (prefersReducedMotion) {
+          counter.textContent = `${target}+`;
+          return;
+        }
         let current = 0;
         const step = Math.max(1, Math.round(target / 34));
         const timer = window.setInterval(() => {
@@ -167,6 +173,9 @@ function initPureBot() {
   const input = bot.querySelector('[data-purebot-input]');
   const prompts = [...bot.querySelectorAll('[data-purebot-prompt]')];
 
+  // Panel ships closed: keep it out of the tab order until opened (setOpen syncs this with aria-hidden).
+  panel.inert = true;
+
   function linkFor(pattern, fallback = '') {
     const links = [...document.querySelectorAll('a[href]')];
     const match = links.find((link) => pattern.test(link.textContent.trim()) || pattern.test(link.getAttribute('href')));
@@ -249,6 +258,7 @@ function initPureBot() {
   function setOpen(isOpen) {
     bot.classList.toggle('is-open', isOpen);
     panel.setAttribute('aria-hidden', String(!isOpen));
+    panel.inert = !isOpen;
     toggle.setAttribute('aria-expanded', String(isOpen));
     toggle.setAttribute('aria-label', isOpen ? 'Close PureBot' : 'Open PureBot');
     if (isOpen) input.focus();

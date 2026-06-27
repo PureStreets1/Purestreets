@@ -2,7 +2,7 @@
 id: will-change-never-released
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: med
 scope: perf
 evidence:

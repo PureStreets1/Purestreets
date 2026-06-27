@@ -2,7 +2,7 @@
 id: hero-images-unsized-cls
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: low
 scope: perf
 evidence:

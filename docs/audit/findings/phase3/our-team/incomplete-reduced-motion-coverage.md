@@ -2,7 +2,7 @@
 id: incomplete-reduced-motion-coverage
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: low
 scope: a11y
 evidence:

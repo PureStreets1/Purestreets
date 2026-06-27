@@ -2,7 +2,7 @@
 id: hero-lcp-8s
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: high
 scope: perf
 evidence:

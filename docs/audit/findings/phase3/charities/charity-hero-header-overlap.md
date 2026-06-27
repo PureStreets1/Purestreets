@@ -2,7 +2,7 @@
 id: charity-hero-header-overlap
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: high
 scope: design
 evidence:

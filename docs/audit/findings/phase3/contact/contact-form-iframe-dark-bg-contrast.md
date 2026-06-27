@@ -2,7 +2,7 @@
 id: contact-form-iframe-dark-bg-contrast
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: med
 scope: design
 evidence:

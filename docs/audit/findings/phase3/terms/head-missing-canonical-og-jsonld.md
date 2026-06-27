@@ -2,7 +2,7 @@
 id: head-missing-canonical-og-jsonld
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: low
 scope: structure
 evidence:

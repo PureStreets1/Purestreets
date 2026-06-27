@@ -2,7 +2,7 @@
 id: hero-h1-eyebrow-clipped-by-fixed-header
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: high
 scope: design
 evidence:

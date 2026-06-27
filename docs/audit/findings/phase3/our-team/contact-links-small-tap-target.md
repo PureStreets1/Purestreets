@@ -2,7 +2,7 @@
 id: contact-links-small-tap-target
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: med
 scope: a11y
 evidence:

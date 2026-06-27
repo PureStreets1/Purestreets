@@ -2,7 +2,7 @@
 id: coral-labels-fail-contrast
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: high
 scope: a11y
 evidence:

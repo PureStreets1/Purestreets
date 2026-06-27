@@ -2,7 +2,7 @@
 id: purebot-panel-aria-hidden-focus
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: high
 scope: a11y
 evidence:

@@ -2,7 +2,7 @@
 id: header-overlaps-hero-h1
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: high
 scope: design
 evidence:

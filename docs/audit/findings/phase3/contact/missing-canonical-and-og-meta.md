@@ -2,7 +2,7 @@
 id: missing-canonical-and-og-meta
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: med
 scope: code
 evidence:

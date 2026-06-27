@@ -2,7 +2,7 @@
 id: aria-table-required-children
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: low
 scope: structure
 evidence:

@@ -2,7 +2,7 @@
 id: head-metadata-canonical-og
 phase: phase3
 agent: orchestrator
-status: verified
+status: fixed
 severity: low
 scope: code
 evidence:

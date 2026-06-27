@@ -2,7 +2,7 @@
 id: fixed-header-occludes-hero
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: med
 scope: design
 evidence:

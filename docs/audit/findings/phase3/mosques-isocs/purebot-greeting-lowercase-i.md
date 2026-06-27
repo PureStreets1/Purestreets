@@ -2,7 +2,7 @@
 id: purebot-greeting-lowercase-i
 phase: phase3
 agent: critic
-status: verified
+status: fixed
 severity: low
 scope: content
 evidence:

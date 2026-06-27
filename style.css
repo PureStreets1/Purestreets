@@ -2855,3 +2855,17 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+/* T3 (Phase 7): these three subpage heroes floored their mobile top padding at the
+   base clamp min (132px), which is BELOW the ~137px rendered mobile header, so the
+   eyebrow sat ~3-5px under the fixed header at 375/768 (hero-probe.json). Raise the
+   mobile clearance with the same --header-h pattern as .contact-hero so the eyebrow
+   clears with a small positive gap. <=860 covers 375 AND 768 (team's own 1-col
+   breakpoint is 760); desktop (>860) keeps the unchanged base padding. */
+@media (max-width: 860px) {
+  .charity-hero,
+  .team-hero,
+  .volunteer-hero {
+    padding-top: calc(var(--header-h) + 5px);
+  }
+}

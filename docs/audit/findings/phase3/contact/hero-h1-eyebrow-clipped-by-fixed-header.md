@@ -98,3 +98,23 @@ failedToRefute: 2 / 2
   375.png both show the top of "Speak" clipped and no "Contact us" eyebrow. Fix
   (increase hero padding-top) touches no JS flow, data-* hook, localStorage, copy,
   or asset — behavior-safe layout fix.
+
+## Phase 7 re-fix (status: fixed)
+Phase 6 marked this INSUFFICIENT: Phase 5 cleared the H1 at desktop but the
+"Contact us" eyebrow (topmost element, ~30-60px above the H1) still sat inside the
+header's drop-shadow band at 1280/1440, and the mobile `padding-top: 118px`
+(< the ~137px mobile header) left the H1 clipped at 375/768. Root geometry
+(measured `scratchpad/real_contact1440.png`): header BOX bottom ≈**184** at 1440
+(matches `--header-h`), with a `0 10px 30px` shadow reaching ~40px below; the old
+`clamp(136px, 11.2vw+46, 203px)` only cleared the box by +18px. Phase 7 raised the
+clearance, tied to the header token:
+- `.contact-hero` base top: `clamp(136px, calc(11.2vw + 46px), 203px) ->
+  calc(var(--header-h) + 40px)` (style.css ~1859) — clears the box **and** its
+  drop-shadow so the eyebrow is fully below the opaque header at 1280/1440
+  (1440: 225px; 1280: ~211px).
+- `.contact-hero` `<=860` top: `118px -> calc(var(--header-h) + 20px)`
+  (= 157px; style.css ~1954) — eyebrow + full H1 clear the ~137px mobile header
+  at 375/768.
+Side/bottom padding, `align-items`, grid, and the figure asset are unchanged; no
+JS/`data-*`/localStorage/anchor/copy change. Decision:
+`docs/audit/decisions/phase7/css-rehero-and-contrast.md`.

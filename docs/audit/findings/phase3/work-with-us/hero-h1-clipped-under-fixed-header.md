@@ -104,3 +104,19 @@ failedToRefute: 3 / 3
   is-scrolled header is opaque (style.css:61-67) so it hides rather than reveals
   the text. Not subjective; objective layout defect with a contained padding-only
   fix direction.
+
+## Phase 7 re-fix (status: fixed)
+Phase 6 marked this INSUFFICIENT: Phase 5 resolved the sliced H1 at 1280/1440 but
+the "Work with us" eyebrow (topmost element, above the H1) still sat inside the
+header's drop-shadow band and was occluded/borderline at desktop widths. Root
+geometry (measured `scratchpad/real_wwu1440.png`): header BOX bottom ≈**184** at
+1440 (matches `--header-h`), `0 10px 30px` shadow reaching ~40px below; the old
+`clamp(132px, 11.2vw+46, 203px)` only cleared the box by +18px. Phase 7 raised the
+`.work-hero` base top clearance, tied to the header token:
+`clamp(132px, calc(11.2vw + 46px), 203px) -> calc(var(--header-h) + 40px)`
+(style.css ~2618) — clears the box **and** its drop-shadow so the eyebrow renders
+fully below the opaque header at 1280/1440 (1440: 225px; 1280: ~211px), and at
+mobile (no override) widens clearance to 177px (improves the pre-existing minor
+graze; no regression). Side/bottom padding, `align-items`, grid, the panel, and
+copy are unchanged; no JS/`data-*`/localStorage/anchor/asset change. Decision:
+`docs/audit/decisions/phase7/css-rehero-and-contrast.md`.

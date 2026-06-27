@@ -8,7 +8,7 @@
   --lime: #d8f35f;
   --gold: #f3bd46;
   --coral: #e6654f;
-  --coral-text: #bd4631; /* darker coral for small label text: >=4.5:1 on paper/white/#fffdf7 */
+  --coral-text: #b8432e; /* darker coral for small label text: >=4.5:1 on #fbf8ef/#ffffff/#fffdf7/#f4efe1 */
   --line: rgba(23, 32, 27, 0.14);
   --shadow: 0 24px 70px rgba(18, 60, 43, 0.18);
   /* rendered fixed-header height = ~28px chrome + 1.4 * logo-width (clamp(78,8vw,112)) */
@@ -638,7 +638,9 @@ h3 {
 
   .hero {
     min-height: 96vh;
-    padding-top: 128px;
+    /* T4: clear the fixed-header box at mobile so the full H1 (both lines) and the
+       topmost lime overlap render below the header; no upward translate (below). */
+    padding-top: calc(var(--header-h) + 12px);
   }
 
   .hero__content {
@@ -1851,7 +1853,10 @@ h3 {
   grid-template-columns: minmax(0, 1fr) minmax(180px, 320px);
   gap: clamp(28px, 6vw, 80px);
   align-items: center;
-  padding: clamp(136px, calc(11.2vw + 46px), 203px) clamp(18px, 6vw, 86px) clamp(64px, 8vw, 110px);
+  /* T3: clear the fixed-header box (var(--header-h)) AND its 0 10px 30px drop-shadow
+     so the "Contact us" eyebrow (topmost element, above the H1) sits fully below the
+     opaque is-scrolled header at 1280/1440. */
+  padding: calc(var(--header-h) + 40px) clamp(18px, 6vw, 86px) clamp(64px, 8vw, 110px);
   background: linear-gradient(180deg, #fffdf7, var(--paper));
 }
 
@@ -1945,7 +1950,8 @@ h3 {
   }
 
   .contact-hero {
-    padding-top: 118px;
+    /* T3: raise mobile clearance so the eyebrow + full H1 clear the fixed header at 375/768 */
+    padding-top: calc(var(--header-h) + 20px);
   }
 
   .contact-hero img {
@@ -2606,7 +2612,10 @@ h3 {
   grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
   gap: clamp(30px, 6vw, 78px);
   align-items: center;
-  padding: clamp(132px, calc(11.2vw + 46px), 203px) clamp(18px, 6vw, 86px) clamp(58px, 8vw, 96px);
+  /* T3: clear the fixed-header box (var(--header-h)) AND its 0 10px 30px drop-shadow
+     so the "Work with us" eyebrow (topmost element, above the H1) sits fully below the
+     opaque is-scrolled header at 1280/1440. */
+  padding: calc(var(--header-h) + 40px) clamp(18px, 6vw, 86px) clamp(58px, 8vw, 96px);
   background: linear-gradient(180deg, #fffdf7, #edf5e9);
 }
 

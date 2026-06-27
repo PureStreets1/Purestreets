@@ -86,3 +86,17 @@ failedToRefute: 3 / 3
   (style.css:163-166) and excluded. Real, measurable a11y defect per coding-rules
   A3 / design-rules D11; the color change is scoped to the finding itself. Not
   slop/taste.
+
+## Phase 7 re-fix (status: fixed)
+Phase 6 marked `--coral-text: #bd4631` INSUFFICIENT: it cleared 4.5:1 on
+`#fbf8ef`/`#ffffff`/`#fffdf7` but only **4.476** on the warmer `.section--schedule`
+background `#f4efe1` (style.css:432), so axe still listed
+`#pickups > .section__heading > .eyebrow`. Phase 7 darkened the token one step:
+`--coral-text: #bd4631 -> #b8432e` (style.css:11). Exact WCAG ratios
+(`scratchpad/contrast.py`): `#fbf8ef` **5.096**, `#ffffff` **5.412**, `#fffdf7`
+**5.320**, `#f4efe1` **4.711** — all >=4.5:1, worst case `#f4efe1` cleared with a
+small margin. Still a recognizable coral (184,67,46), not brown. The global
+`--coral` token, the hero lime eyebrow override, and the dark-section eyebrow
+(`.impact-copy`/`.kit-section` → `--coral`) are unchanged; darkening can only
+raise contrast on a light background, so no other label surface regresses.
+Decision: `docs/audit/decisions/phase7/css-rehero-and-contrast.md`.

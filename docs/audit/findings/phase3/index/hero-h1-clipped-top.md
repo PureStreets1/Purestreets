@@ -102,3 +102,19 @@ failedToRefute: 3 / 3
   genuine content loss of the focal point (design-rules D1), not subjective
   taste; CLAUDE.md contract supersedes ZERO-visual-change and permits an
   evidence-backed visual fix. Fix must preserve the intact 768 rendering.
+
+## Phase 7 re-fix (status: fixed)
+Phase 6 found the 1440 fix landed but the `<=860` mobile override (translateY(0),
+`padding-top: 128px`) was untouched, so the topmost hero element was reported
+clipped at 375. Phase 7 measurement of the authoritative fixed-viewport reshoot
+(`scratchpad/vp_idx375.png`, 375x667, deviceScaleFactor=1, scroll-top) shows the
+H1 top at y≈**176** vs the transparent header box bottom y≈**137** (the full-page
+clip was a `position:fixed` capture artifact), but the topmost lime overlap
+("COMMUNITY ACTION GROUP") sat right at the header edge (~137). To guarantee the
+full H1 + the topmost element render below the header box at 375/768, Phase 7
+tied the mobile clearance to the header token: index `.hero` `<=860`
+`padding-top: 128px -> calc(var(--header-h) + 12px)` (= 149px at mobile; +12px of
+clearance above the header box, style.css ~643). `translateY(0)` at mobile is
+kept (no upward pull). Base/desktop `.hero` and the `>=1281px` easing are
+unchanged, so 1280/1440 stay as the Phase 5 fix left them. Decision:
+`docs/audit/decisions/phase7/css-rehero-and-contrast.md`.

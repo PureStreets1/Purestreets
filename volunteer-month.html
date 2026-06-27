@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Nominate PureStreets volunteers of the month and track volunteer points for litter picks, hours, bags, and service." />
   <title>PureStreets | Volunteer of the Month</title>
+  <link rel="canonical" href="https://purestreets1.github.io/Purestreets/volunteer-month.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://purestreets1.github.io/Purestreets/volunteer-month.html" />
+  <meta property="og:title" content="PureStreets | Volunteer of the Month" />
+  <meta property="og:description" content="Nominate PureStreets volunteers of the month and track volunteer points for litter picks, hours, bags, and service." />
+  <meta property="og:image" content="https://purestreets1.github.io/Purestreets/assets/img/hero-banner.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "PureStreets",
+      "url": "https://purestreets1.github.io/Purestreets/",
+      "logo": "https://purestreets1.github.io/Purestreets/assets/img/logo.png"
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -48,10 +64,6 @@
       </div>
     </section>
 
-    <a class="section-arrow" href="#volunteer-leaderboard" aria-label="Go to volunteer leaderboard" data-reveal="down" style="--reveal-delay: 160ms;">
-      <span></span>
-    </a>
-
     <section id="volunteer-leaderboard" class="volunteer-tracker volunteer-page" aria-labelledby="volunteer-board-title" data-reveal="down" style="--reveal-delay: 220ms;">
       <div class="volunteer-board" aria-live="polite">
         <div class="volunteer-board__head">
@@ -77,14 +89,10 @@
             <span role="columnheader">Points</span>
           </div>
           <div class="volunteer-empty" data-volunteer-empty>No volunteer entries yet.</div>
-          <div data-volunteer-rows></div>
+          <div role="rowgroup" data-volunteer-rows></div>
         </div>
       </div>
     </section>
-
-    <a class="section-arrow section-arrow--cream" href="#volunteer-form" aria-label="Go to volunteer entry form" data-reveal="down" style="--reveal-delay: 160ms;">
-      <span></span>
-    </a>
 
     <section id="volunteer-form" class="volunteer-form-section volunteer-page" aria-labelledby="volunteer-form-title" data-reveal="down" style="--reveal-delay: 220ms;">
       <form class="join-form volunteer-form" data-volunteer-form>
@@ -126,9 +134,6 @@
       </form>
     </section>
 
-    <a class="section-arrow section-arrow--cream" href="#volunteer-network" aria-label="Go to WhatsApp network form" data-reveal="down" style="--reveal-delay: 160ms;">
-      <span></span>
-    </a>
     <section id="volunteer-network" class="volunteer-network-section" aria-labelledby="volunteer-network-title" data-reveal="down" style="--reveal-delay: 220ms;">
       <div>
         <p class="eyebrow">WhatsApp network</p>
@@ -208,7 +213,7 @@
         <button type="button" data-purebot-close aria-label="Close PureBot">x</button>
       </header>
       <div class="purebot-messages" data-purebot-messages aria-live="polite">
-        <p class="purebot-message purebot-message--bot">Assalamu alaikum, how can i help you?</p>
+        <p class="purebot-message purebot-message--bot">Assalamu alaikum, how can I help you?</p>
       </div>
       <div class="purebot-prompts" aria-label="Quick PureBot questions">
         <button type="button" data-purebot-prompt="events">Upcoming events</button>

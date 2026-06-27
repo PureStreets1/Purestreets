@@ -3,8 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Preload the hero LCP background image (same-origin, reprioritised; matches the style.css background-image URL) -->
+  <link rel="preload" as="image" href="assets/img/hero-banner.jpg" fetchpriority="high" />
   <meta name="description" content="PureStreets is a grassroots community litter-picking movement inspired by faith, service, and care for the streets we share." />
   <title>PureStreets | Clean Streets, Shared Reward</title>
+  <!-- Canonical + Open Graph / Twitter share metadata (render-neutral) -->
+  <link rel="canonical" href="https://purestreets1.github.io/Purestreets/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://purestreets1.github.io/Purestreets/" />
+  <meta property="og:title" content="PureStreets | Clean Streets, Shared Reward" />
+  <meta property="og:description" content="PureStreets is a grassroots community litter-picking movement inspired by faith, service, and care for the streets we share." />
+  <meta property="og:image" content="https://purestreets1.github.io/Purestreets/assets/img/hero-banner.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <!-- Structured data: Organization (site-wide) + the visible pickup-card Events -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://purestreets1.github.io/Purestreets/#organization",
+        "name": "PureStreets",
+        "url": "https://purestreets1.github.io/Purestreets/",
+        "logo": "https://purestreets1.github.io/Purestreets/assets/img/logo.png",
+        "image": "https://purestreets1.github.io/Purestreets/assets/img/hero-banner.jpg",
+        "description": "PureStreets is a grassroots community litter-picking movement inspired by faith, service, and care for the streets we share.",
+        "email": "purestreets0@gmail.com",
+        "sameAs": [
+          "https://www.instagram.com/purestreets1/",
+          "https://www.linkedin.com/company/purestreets/",
+          "https://www.facebook.com/purestreets/",
+          "https://www.tiktok.com/@purestreets1"
+        ]
+      },
+      {
+        "@type": "Event",
+        "name": "Cricklewood Litter Pick",
+        "startDate": "2026-06-27",
+        "description": "PureStreets x Human Appeal",
+        "organizer": { "@id": "https://purestreets1.github.io/Purestreets/#organization" }
+      },
+      {
+        "@type": "Event",
+        "name": "Park & Playground Sweep",
+        "startDate": "2026-07-04",
+        "description": "Family-friendly route with separate teams for paths and green spaces.",
+        "organizer": { "@id": "https://purestreets1.github.io/Purestreets/#organization" }
+      },
+      {
+        "@type": "Event",
+        "name": "Sisters PureStreets",
+        "startDate": "2026-07-11",
+        "description": "A sisters-led route with a short reflection circle after the clean.",
+        "organizer": { "@id": "https://purestreets1.github.io/Purestreets/#organization" }
+      }
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -222,7 +277,7 @@
         <button type="button" data-purebot-close aria-label="Close PureBot">x</button>
       </header>
       <div class="purebot-messages" data-purebot-messages aria-live="polite">
-        <p class="purebot-message purebot-message--bot">Assalamu alaikum, how can i help you?</p>
+        <p class="purebot-message purebot-message--bot">Assalamu alaikum, how can I help you?</p>
       </div>
       <div class="purebot-prompts" aria-label="Quick PureBot questions">
         <button type="button" data-purebot-prompt="events">Upcoming events</button>

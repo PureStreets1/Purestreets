@@ -1,0 +1,6 @@
+# Audit scratch — tool installs, binaries, and generated captures (not source of truth)
+docs/audit/runs/
+docs/audit/screenshots/
+docs/audit/screenshots-after/
+node_modules/
+.DS_Store

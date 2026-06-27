@@ -454,33 +454,7 @@ function initVolunteerTracker() {
 
   renderBoard();
 }
-
-function initInterestForm() {
-  const form = document.querySelector('[data-interest-form]');
-  if (!form) return;
-
-  const status = form.querySelector('[data-interest-status]');
-
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    if (!form.reportValidity()) return;
-
-    const data = new FormData(form);
-    const name = String(data.get('name') || '').trim();
-    const email = String(data.get('email') || '').trim();
-    const message = String(data.get('message') || '').trim() || 'I would like to register interest in a PureStreets pickup.';
-    const subject = encodeURIComponent('PureStreets register interest');
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-
-    window.location.href = `mailto:purestreets0@gmail.com?subject=${subject}&body=${body}`;
-
-    if (status) {
-      status.textContent = 'Your email app should open now. If it does not, email purestreets0@gmail.com with your details.';
-    }
-  });
-}
 initPureBot();
-initInterestForm();
 initVolunteerTracker();
 renderCompetition();
 setHeaderState();

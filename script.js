@@ -253,9 +253,9 @@ function initVolunteerTracker() {
   const leaderDetailTarget = document.querySelector('[data-volunteer-leader-detail]');
   const key = 'purestreets-volunteer-month';
 
-  if (!form || !rowsTarget) return;
+  if (!rowsTarget) return;
 
-  const monthInput = form.querySelector('input[name="month"]');
+  const monthInput = form?.querySelector('input[name="month"]');
   if (monthInput && !monthInput.value) {
     monthInput.value = new Date().toISOString().slice(0, 7);
   }
@@ -284,6 +284,7 @@ function initVolunteerTracker() {
       const current = board.get(id) || {
         name: entry.name,
         month: entry.month,
+        school: entry.school || '',
         sessions: 0,
         bags: 0,
         hours: 0,
@@ -298,10 +299,53 @@ function initVolunteerTracker() {
       current.points += pointsFor(entry);
       current.latestRoute = entry.route || current.latestRoute;
       current.latestNote = entry.note || current.latestNote;
+      if (entry.school) current.school = entry.school;
       board.set(id, current);
     });
 
     return [...board.values()].sort((a, b) => b.points - a.points || b.bags - a.bags || a.name.localeCompare(b.name));
+  }
+
+  function getOrgBoard(entries) {
+    const orgs = new Map();
+    entries.forEach((entry) => {
+      const school = entry.school || '';
+      if (!school) return;
+      const current = orgs.get(school) || { name: school, volunteers: new Set(), sessions: 0, bags: 0, hours: 0, points: 0 };
+      current.volunteers.add(entry.name.toLowerCase());
+      current.sessions += 1;
+      current.bags += entry.bags;
+      current.hours += entry.hours;
+      current.points += pointsFor(entry);
+      orgs.set(school, current);
+    });
+    return [...orgs.values()]
+      .map((org) => ({ ...org, volunteerCount: org.volunteers.size }))
+      .sort((a, b) => b.points - a.points || b.bags - a.bags || a.name.localeCompare(b.name));
+  }
+
+  const orgRows = document.querySelector('[data-org-rows]');
+  const orgEmpty = document.querySelector('[data-org-empty]');
+
+  function renderOrgBoard() {
+    if (!orgRows) return;
+    const orgs = getOrgBoard(readEntries());
+    orgRows.innerHTML = '';
+    if (orgEmpty) orgEmpty.hidden = orgs.length > 0;
+
+    orgs.forEach((org, index) => {
+      const row = document.createElement('article');
+      row.className = `org-row${index === 0 ? ' is-leading' : ''}`;
+      row.innerHTML = `
+        <div class="org-row__name"><strong></strong><small></small></div>
+        <span class="org-row__stat">${org.bags} bags</span>
+        <span class="org-row__stat">${org.hours} hrs</span>
+        <strong class="org-row__points">${org.points}</strong>
+      `;
+      row.querySelector('strong').textContent = org.name;
+      row.querySelector('small').textContent = `${org.volunteerCount} volunteer${org.volunteerCount === 1 ? '' : 's'} · ${org.sessions} clean-up${org.sessions === 1 ? '' : 's'}`;
+      orgRows.appendChild(row);
+    });
   }
 
   function renderBoard() {
@@ -313,6 +357,7 @@ function initVolunteerTracker() {
       if (leaderNameTarget) leaderNameTarget.textContent = 'Waiting for entries';
       leaderNameTarget?.closest('.volunteer-leader')?.classList.remove('is-celebrating');
       if (leaderDetailTarget) leaderDetailTarget.textContent = 'Add a nomination to begin.';
+      renderOrgBoard();
       return;
     }
 
@@ -343,33 +388,37 @@ function initVolunteerTracker() {
         <strong class="volunteer-points" role="cell">${person.points}</strong>
       `;
       row.querySelector('strong').textContent = person.name;
-      row.querySelector('small').textContent = `${person.month} - ${person.latestRoute || 'PureStreets route'}`;
+      row.querySelector('small').textContent = `${person.month} - ${person.latestRoute || 'PureStreets route'}${person.school ? ' (' + person.school + ')' : ''}`;
       rowsTarget.appendChild(row);
     });
+
+    renderOrgBoard();
   }
 
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const data = new FormData(form);
-    const entry = {
-      name: String(data.get('name') || '').trim(),
-      month: String(data.get('month') || '').trim(),
-      route: String(data.get('route') || '').trim(),
-      bags: Math.max(0, Number(data.get('bags')) || 0),
-      hours: Math.max(0, Number(data.get('hours')) || 0),
-      bonus: Math.max(0, Number(data.get('bonus')) || 0),
-      note: String(data.get('note') || '').trim()
-    };
+  if (form) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const entry = {
+        name: String(data.get('name') || '').trim(),
+        month: String(data.get('month') || '').trim(),
+        route: String(data.get('route') || '').trim(),
+        bags: Math.max(0, Number(data.get('bags')) || 0),
+        hours: Math.max(0, Number(data.get('hours')) || 0),
+        bonus: Math.max(0, Number(data.get('bonus')) || 0),
+        note: String(data.get('note') || '').trim()
+      };
 
-    if (!entry.name || !entry.month || !entry.route) return;
+      if (!entry.name || !entry.month || !entry.route) return;
 
-    const entries = readEntries();
-    entries.push(entry);
-    writeEntries(entries);
-    form.reset();
-    if (monthInput) monthInput.value = entry.month;
-    renderBoard();
-  });
+      const entries = readEntries();
+      entries.push(entry);
+      writeEntries(entries);
+      form.reset();
+      if (monthInput) monthInput.value = entry.month;
+      renderBoard();
+    });
+  }
 
   resetButton?.addEventListener('click', () => {
     window.localStorage.removeItem(key);

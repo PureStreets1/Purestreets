@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>PureStreets Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="subpage admin-body">
+  <header class="site-header is-scrolled" data-header>
+    <a class="brand" href="index.html" aria-label="PureStreets home">
+      <img src="assets/img/logo.png" alt="PureStreets" />
+    </a>
+    <span class="admin-badge">Admin</span>
+  </header>
+
+  <!-- Login gate -->
+  <section class="admin-login" id="admin-login" data-admin-login>
+    <form class="admin-login__form" data-admin-login-form>
+      <h1>Admin Login</h1>
+      <p>This area is restricted to PureStreets administrators.</p>
+      <label>
+        <span>Username</span>
+        <input type="text" name="username" autocomplete="username" required />
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" name="password" autocomplete="current-password" required />
+      </label>
+      <p class="admin-login__error" data-admin-error hidden>Invalid credentials. Please try again.</p>
+      <button class="button button--primary" type="submit">Log in</button>
+    </form>
+  </section>
+
+  <!-- Admin dashboard (hidden until authenticated) -->
+  <main class="admin-dashboard" id="admin-dashboard" data-admin-dashboard hidden>
+    <div class="admin-topbar">
+      <h1>Volunteer Dashboard</h1>
+      <button class="button button--outline" type="button" data-admin-logout>Log out</button>
+    </div>
+
+    <!-- Add volunteer entry form -->
+    <section class="admin-section" aria-labelledby="admin-add-title">
+      <h2 id="admin-add-title">Add Volunteer Entry</h2>
+      <form class="admin-form" data-admin-volunteer-form>
+        <div class="admin-form__row">
+          <label>
+            <span>Volunteer name</span>
+            <input type="text" name="name" placeholder="e.g. Fatima Ahmed" required />
+          </label>
+          <label>
+            <span>School / ISOC</span>
+            <input type="text" name="school" list="school-list" placeholder="e.g. KCL ISOC" />
+          </label>
+          <datalist id="school-list" data-school-list></datalist>
+        </div>
+        <div class="admin-form__row">
+          <label>
+            <span>Month</span>
+            <input type="month" name="month" required />
+          </label>
+          <label>
+            <span>Route / Clean-up</span>
+            <input type="text" name="route" placeholder="e.g. High Street Reset" required />
+          </label>
+        </div>
+        <div class="admin-form__row">
+          <label>
+            <span>Bags collected</span>
+            <input type="number" name="bags" min="0" step="1" value="0" />
+          </label>
+          <label>
+            <span>Hours served</span>
+            <input type="number" name="hours" min="0" step="0.5" value="1" />
+          </label>
+          <label>
+            <span>Bonus points</span>
+            <input type="number" name="bonus" min="0" step="1" value="0" />
+          </label>
+        </div>
+        <label>
+          <span>Note (optional)</span>
+          <textarea name="note" rows="2" placeholder="Reason for bonus or nomination note"></textarea>
+        </label>
+        <button class="button button--primary" type="submit">Add Entry</button>
+      </form>
+    </section>
+
+    <!-- Manage Schools / ISOCs -->
+    <section class="admin-section" aria-labelledby="admin-schools-title">
+      <h2 id="admin-schools-title">Schools &amp; ISOCs</h2>
+      <div class="admin-form__row">
+        <label>
+          <span>Add school / ISOC</span>
+          <input type="text" data-admin-school-input placeholder="e.g. UCL ISOC" />
+        </label>
+        <button class="button button--primary" type="button" data-admin-add-school>Add</button>
+      </div>
+      <div class="admin-tags" data-admin-school-tags></div>
+    </section>
+
+    <!-- Current leaderboard -->
+    <section class="admin-section" aria-labelledby="admin-board-title">
+      <div class="admin-section__head">
+        <h2 id="admin-board-title">Current Leaderboard</h2>
+        <div class="admin-section__actions">
+          <button class="button button--outline" type="button" data-admin-reset>Reset All</button>
+        </div>
+      </div>
+
+      <div class="leader-card volunteer-leader" data-admin-leader-card>
+        <span>Current volunteer of the month</span>
+        <strong data-admin-leader-name>Waiting for entries</strong>
+        <p data-admin-leader-detail>Add an entry to begin.</p>
+      </div>
+
+      <div class="volunteer-table" role="table" aria-label="Admin volunteer leaderboard">
+        <div class="volunteer-row volunteer-row--head" role="row">
+          <span role="columnheader">Volunteer</span>
+          <span role="columnheader">Clean-ups</span>
+          <span role="columnheader">Bags</span>
+          <span role="columnheader">Hours</span>
+          <span role="columnheader">Points</span>
+          <span role="columnheader">Actions</span>
+        </div>
+        <div class="admin-empty" data-admin-empty>No entries yet. Add one above.</div>
+        <div data-admin-rows></div>
+      </div>
+    </section>
+
+    <!-- Raw entries (for editing/deleting individual entries) -->
+    <section class="admin-section" aria-labelledby="admin-entries-title">
+      <h2 id="admin-entries-title">All Entries</h2>
+      <p class="admin-hint">Individual session entries. Delete or edit any single entry.</p>
+      <div class="admin-entries-list" data-admin-entries></div>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

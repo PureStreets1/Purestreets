@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="PureStreets support for mosques and Islamic societies, including an inter-ISOC litter collection competition split by brothers and sisters teams." />
-  <title>PureStreets | Mosques & ISOCs</title>
+  <meta name="description" content="Get involved with PureStreets — volunteer, partner with mosques and ISOCs, join charity campaigns, or work with us on environment, tech, and design." />
+  <title>PureStreets</title>
+  <link rel="canonical" href="https://purestreets1.github.io/Purestreets/get-involved.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://purestreets1.github.io/Purestreets/get-involved.html" />
+  <meta property="og:title" content="PureStreets | Get Involved" />
+  <meta property="og:description" content="Get involved with PureStreets — volunteer, partner with mosques and ISOCs, join charity campaigns, or work with us on environment, tech, and design." />
+  <meta property="og:image" content="https://purestreets1.github.io/Purestreets/assets/img/hero-banner.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"PureStreets","url":"https://purestreets1.github.io/Purestreets/","logo":"https://purestreets1.github.io/Purestreets/assets/img/logo.png","sameAs":["https://www.instagram.com/purestreets1/","https://www.linkedin.com/company/purestreets/","https://www.facebook.com/purestreets/","https://www.tiktok.com/@purestreets1"]}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -21,31 +31,20 @@
       <span></span><span></span><span></span>
     </button>
     <nav class="site-nav" data-nav>
-      <a href="index.html#mission">Mission</a>
-      <a href="index.html#pickups">Events</a>
-      <a href="index.html#impact">Impact</a>
-      <a href="volunteer-month.html">Volunteer</a>
-
-      <a class="is-active" href="mosques-isocs.html">Mosques & ISOCs</a>
-      <a href="charities.html">Charities</a>
-      <a href="work-with-us.html">Work with us</a>
+      <a class="is-active" href="get-involved.html">Get involved</a>
       <a href="our-team.html">Our team</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
 
   <main>
-    <section class="campaign-hero">
+    <!-- Mosques & ISOCs hero with video -->
+    <section id="mosques-isocs" class="campaign-hero">
       <div class="campaign-hero__copy">
-        <p class="eyebrow" data-reveal="down">Mosques & Islamic societies</p>
         <h1 data-reveal="left" style="--reveal-delay: 120ms;">Turn your local clean into a campus&#8209;wide sadaqah challenge.</h1>
         <p data-reveal="left" style="--reveal-delay: 240ms;">PureStreets helps masjids and ISOCs run organised litter picks with clear roles, safe routes, and a friendly competition that records how much each society collects.</p>
-        <div class="hero__actions" data-reveal="up" style="--reveal-delay: 360ms;">
-          <a class="button button--primary" href="#competition">Open the counter</a>
-          <a class="button button--dark" href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Partner with us</a>
-        </div>
       </div>
-      <div class="campaign-hero__video" data-reveal="right" style="--reveal-delay: 220ms;" aria-label="PureStreets Sisters Southall video">
+      <div class="campaign-hero__video" data-reveal="right" style="--reveal-delay: 220ms;">
         <video class="local-hero-video" controls autoplay muted loop playsinline poster="assets/img/video-poster.jpg">
           <source src="assets/video/sisters-southall.mp4" type="video/mp4" />
           <a href="assets/video/sisters-southall.mp4">Open the Sisters Southall video</a>
@@ -53,7 +52,7 @@
       </div>
     </section>
 
-
+    <!-- Competition poster -->
     <section class="poster-section" aria-labelledby="competition-poster-title">
       <article class="climate-poster">
         <div class="poster-alert" data-reveal="left">
@@ -73,7 +72,7 @@
         <h2 id="competition-poster-title" data-reveal="up" style="--reveal-delay: 220ms;">Brothers vs Sisters<br />Litter Pick</h2>
         <p class="poster-kicker" data-reveal="right" style="--reveal-delay: 320ms;">Let the Clean-Up Battle Begin!</p>
         <p class="poster-date" data-reveal="left" style="--reveal-delay: 420ms;">Muslim Climate Action Week<br /><span>14th July to 20th July</span></p>
-        <div class="poster-scenes" data-reveal="up" style="--reveal-delay: 520ms;" aria-label="Brothers and sisters litter pick illustration">
+        <div class="poster-scenes" role="img" data-reveal="up" style="--reveal-delay: 520ms;" aria-label="Brothers and sisters litter pick illustration">
           <div class="poster-scene poster-scene--sisters">
             <span class="sun"></span>
             <span class="cloud"></span>
@@ -97,10 +96,10 @@
       </article>
     </section>
 
+    <!-- Free litter pick guide -->
     <section class="guide-section" aria-labelledby="guide-title">
       <div class="guide-copy" data-guide-copy>
-        <p class="eyebrow" data-reveal="left">Free resource</p>
-        <h2 id="guide-title" data-reveal="left" style="--reveal-delay: 120ms;">Free Litter pick guide</h2>
+        <h2 id="guide-title" data-reveal="left">Free Litter pick guide</h2>
         <p data-reveal="left" style="--reveal-delay: 240ms;">For <strong>mosques and islamic organisations</strong>. Use the guide to plan routes, brief volunteers, organise equipment, and keep your clean-up safe and easy to run.</p>
         <a class="button button--primary" data-reveal="up" style="--reveal-delay: 360ms;" href="assets/docs/community-litter-pick-guide.pdf" target="_blank" rel="noreferrer">Open the guide</a>
       </div>
@@ -110,6 +109,8 @@
         </object>
       </a>
     </section>
+
+    <!-- Partner grid: Masjids / ISOCs / PureStreets -->
     <section class="partner-grid" id="partner">
       <article data-reveal="up">
         <span>Masjids</span>
@@ -128,124 +129,52 @@
       </article>
     </section>
 
-    <section class="isoc-partnership-section" aria-labelledby="isoc-partnership-title">
-      <div>
-        <p class="eyebrow" data-reveal="left">Previous ISOC partnership</p>
-        <h2 id="isoc-partnership-title" data-reveal="left" style="--reveal-delay: 120ms;">LSE ISOC</h2>
-        <p data-reveal="left" style="--reveal-delay: 240ms;">PureStreets has partnered with LSE ISOC on student-led clean-up activity, helping turn campus energy into visible community care.</p>
-      </div>
-      <article class="partner-logo partner-logo--lse" data-reveal="right" style="--reveal-delay: 160ms;">
-        <span>Islamic society partner</span>
-        <strong>LSE ISOC</strong>
-      </article>
-    </section>
-
-    <section class="partner-cta" aria-label="Partner with PureStreets">
-      <a class="button button--primary" data-reveal="up" href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Partner with us</a>
-    </section>
-
-    <section id="competition" class="competition-section">
-      <div class="competition-head">
+    <!-- Volunteer leaderboard (read-only, admin-managed) -->
+    <section id="volunteer-leaderboard" class="leaderboard-section" aria-labelledby="volunteer-board-title" data-reveal="down" style="--reveal-delay: 220ms;">
+      <div class="leaderboard-section__head">
         <div>
-          <p class="eyebrow" data-reveal="left">Inter-ISOC competition</p>
-          <h2 class="leaderboard-title" data-reveal="down" style="--reveal-delay: 120ms;">LITTER LEADERBOARD</h2>
-          <p data-reveal="left" style="--reveal-delay: 240ms;">Count each bag collected by brothers and sisters teams. Totals save on this device so the leaderboard stays ready between refreshes.</p>
+          <h2 id="volunteer-board-title">Volunteer leaderboard</h2>
         </div>
-        <button class="button button--outline" type="button" data-reveal="right" style="--reveal-delay: 260ms;" data-reset-competition>Reset scores</button>
+        <div class="volunteer-info-card">
+          <span class="eyebrow">How points work</span>
+          <p><strong>20</strong> per clean-up + <strong>5</strong> per bag + <strong>10</strong> per hour + bonus</p>
+        </div>
       </div>
 
-      <div class="leader-card" data-reveal="up" style="--reveal-delay: 160ms;" data-leader-card>
-        <span>Current leader</span>
-        <strong data-leader-name>Waiting for scores</strong>
-        <p data-leader-detail>Add bags below to start the competition.</p>
+      <!-- ISOC / School rankings -->
+      <div class="leaderboard-orgs" data-org-board>
+        <h3>ISOCs &amp; Schools</h3>
+        <div class="org-empty" data-org-empty>No schools or ISOCs registered yet.</div>
+        <div data-org-rows></div>
       </div>
 
-      <div class="competition-table" data-reveal="up" style="--reveal-delay: 260ms;" role="table" aria-label="Inter-ISOC litter competition tally">
-        <div class="competition-row competition-row--head" role="row">
-          <span role="columnheader">Islamic society</span>
-          <span role="columnheader">Brothers</span>
-          <span role="columnheader">Sisters</span>
-          <span role="columnheader">Total</span>
+      <!-- Individual volunteer of the month -->
+      <div class="leaderboard-individuals">
+        <h3>Volunteer of the Month</h3>
+        <div class="leader-card volunteer-leader" data-volunteer-leader-card>
+          <span>Current leader</span>
+          <strong data-volunteer-leader-name>Waiting for entries</strong>
+          <p data-volunteer-leader-detail>Check back soon for the latest standings.</p>
         </div>
 
-        <article class="competition-row" role="row" data-team="UCL ISOC">
-          <div class="team-name" role="cell">
-            <strong>UCL ISOC</strong>
-            <small>Central London route</small>
+        <div class="volunteer-table" role="table" aria-label="Volunteer of the month point tracker">
+          <div class="volunteer-row volunteer-row--head" role="row">
+            <span role="columnheader">Volunteer</span>
+            <span role="columnheader">Clean-ups</span>
+            <span role="columnheader">Bags</span>
+            <span role="columnheader">Hours</span>
+            <span role="columnheader">Points</span>
           </div>
-          <div class="score-control" role="cell" aria-label="UCL ISOC brothers bags">
-            <button type="button" data-score-minus="brothers" aria-label="Remove one brothers bag for UCL ISOC">-</button>
-            <strong data-score="brothers">0</strong>
-            <button type="button" data-score-plus="brothers" aria-label="Add one brothers bag for UCL ISOC">+</button>
-          </div>
-          <div class="score-control" role="cell" aria-label="UCL ISOC sisters bags">
-            <button type="button" data-score-minus="sisters" aria-label="Remove one sisters bag for UCL ISOC">-</button>
-            <strong data-score="sisters">0</strong>
-            <button type="button" data-score-plus="sisters" aria-label="Add one sisters bag for UCL ISOC">+</button>
-          </div>
-          <strong class="team-total" role="cell" data-team-total>0</strong>
-        </article>
-
-        <article class="competition-row" role="row" data-team="KCL ISOC">
-          <div class="team-name" role="cell">
-            <strong>KCL ISOC</strong>
-            <small>Strand and riverside route</small>
-          </div>
-          <div class="score-control" role="cell" aria-label="KCL ISOC brothers bags">
-            <button type="button" data-score-minus="brothers" aria-label="Remove one brothers bag for KCL ISOC">-</button>
-            <strong data-score="brothers">0</strong>
-            <button type="button" data-score-plus="brothers" aria-label="Add one brothers bag for KCL ISOC">+</button>
-          </div>
-          <div class="score-control" role="cell" aria-label="KCL ISOC sisters bags">
-            <button type="button" data-score-minus="sisters" aria-label="Remove one sisters bag for KCL ISOC">-</button>
-            <strong data-score="sisters">0</strong>
-            <button type="button" data-score-plus="sisters" aria-label="Add one sisters bag for KCL ISOC">+</button>
-          </div>
-          <strong class="team-total" role="cell" data-team-total>0</strong>
-        </article>
-
-        <article class="competition-row" role="row" data-team="Imperial ISOC">
-          <div class="team-name" role="cell">
-            <strong>Imperial ISOC</strong>
-            <small>South Kensington route</small>
-          </div>
-          <div class="score-control" role="cell" aria-label="Imperial ISOC brothers bags">
-            <button type="button" data-score-minus="brothers" aria-label="Remove one brothers bag for Imperial ISOC">-</button>
-            <strong data-score="brothers">0</strong>
-            <button type="button" data-score-plus="brothers" aria-label="Add one brothers bag for Imperial ISOC">+</button>
-          </div>
-          <div class="score-control" role="cell" aria-label="Imperial ISOC sisters bags">
-            <button type="button" data-score-minus="sisters" aria-label="Remove one sisters bag for Imperial ISOC">-</button>
-            <strong data-score="sisters">0</strong>
-            <button type="button" data-score-plus="sisters" aria-label="Add one sisters bag for Imperial ISOC">+</button>
-          </div>
-          <strong class="team-total" role="cell" data-team-total>0</strong>
-        </article>
-
-        <article class="competition-row" role="row" data-team="Queen Mary ISOC">
-          <div class="team-name" role="cell">
-            <strong>Queen Mary ISOC</strong>
-            <small>Mile End route</small>
-          </div>
-          <div class="score-control" role="cell" aria-label="Queen Mary ISOC brothers bags">
-            <button type="button" data-score-minus="brothers" aria-label="Remove one brothers bag for Queen Mary ISOC">-</button>
-            <strong data-score="brothers">0</strong>
-            <button type="button" data-score-plus="brothers" aria-label="Add one brothers bag for Queen Mary ISOC">+</button>
-          </div>
-          <div class="score-control" role="cell" aria-label="Queen Mary ISOC sisters bags">
-            <button type="button" data-score-minus="sisters" aria-label="Remove one sisters bag for Queen Mary ISOC">-</button>
-            <strong data-score="sisters">0</strong>
-            <button type="button" data-score-plus="sisters" aria-label="Add one sisters bag for Queen Mary ISOC">+</button>
-          </div>
-          <strong class="team-total" role="cell" data-team-total>0</strong>
-        </article>
+          <div class="volunteer-empty" data-volunteer-empty>No volunteer entries yet.</div>
+          <div data-volunteer-rows></div>
+        </div>
       </div>
     </section>
 
+    <!-- Kit section -->
     <section class="kit-section">
       <div>
-        <p class="eyebrow" data-reveal="left">Run it well</p>
-        <h2 data-reveal="left" style="--reveal-delay: 120ms;">What every mosque or ISOC gets.</h2>
+        <h2 data-reveal="left">What every mosque or ISOC gets.</h2>
       </div>
       <div class="kit-list">
         <article data-reveal="up"><strong>Route sheet</strong><span>Meeting point, boundaries, hazards, and finish location.</span></article>
@@ -254,30 +183,37 @@
         <article data-reveal="up" style="--reveal-delay: 360ms;"><strong>Safety brief</strong><span>Gloves, sharps protocol, bag handling, and reporting process.</span></article>
       </div>
     </section>
+
+    <!-- WhatsApp network Tally form -->
+    <a class="section-arrow section-arrow--cream" href="#volunteer-network" aria-label="Go to WhatsApp network form" data-reveal="down" style="--reveal-delay: 160ms;">
+      <span></span>
+    </a>
+    <section id="volunteer-network" class="volunteer-network-section" aria-labelledby="volunteer-network-title" data-reveal="down" style="--reveal-delay: 220ms;">
+      <div>
+        <h2 id="volunteer-network-title">Apply to join the PureStreets volunteer network.</h2>
+        <p>Use this form to join the WhatsApp network for updates, clean-up opportunities, and volunteer coordination.</p>
+      </div>
+      <div class="tally-embed">
+        <iframe src="https://tally.so/r/3xLRX5" title="PureStreets WhatsApp network application form" loading="lazy"></iframe>
+        <a class="button button--primary" href="https://tally.so/r/3xLRX5" target="_blank" rel="noreferrer">Open WhatsApp network form</a>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
-    <div class="footer-brand" data-reveal="up">
-      <span class="footer-logo-text">PureStreets</span>
-      <p>Believe in Allah and Do Good.</p>
-    </div>
-    <div class="footer-column footer-contact" data-reveal="up" style="--reveal-delay: 100ms;">
-      <h2>Contact us</h2>
-      <a href="mailto:purestreets0@gmail.com">purestreets0@gmail.com</a>
-      <a href="contact.html">Contact page</a>
-      <a href="volunteer-month.html">Volunteer tracker</a>
-      <a href="work-with-us.html">Work with us form</a>
+    <div class="footer-brand" aria-hidden="true"></div>
+    <nav class="footer-column footer-explore" aria-label="Explore PureStreets">
+      <h2>Explore</h2>
+      <a href="get-involved.html">Get involved</a>
       <a href="our-team.html">Our team</a>
-      <a href="charities.html">Charity partnerships</a>
-      <a href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Partner form</a>
-      <a href="https://tally.so/r/3xLRX5" target="_blank" rel="noreferrer">WhatsApp network form</a>
-    </div>
-    <nav class="footer-column footer-legal" data-reveal="up" style="--reveal-delay: 200ms;" aria-label="Legal links">
+      <a href="contact.html">Contact</a>
+    </nav>
+    <nav class="footer-column footer-legal" aria-label="Legal links">
       <h2>Legal</h2>
       <a href="policies.html">Policies</a>
       <a href="terms.html">Terms &amp; conditions</a>
     </nav>
-    <nav class="footer-column social-links" data-reveal="up" style="--reveal-delay: 300ms;" aria-label="PureStreets social links">
+    <nav class="footer-column social-links" aria-label="PureStreets social links">
       <h2>Socials</h2>
       <div class="footer-social-row">
         <a href="https://www.instagram.com/purestreets1/" target="_blank" rel="noreferrer" aria-label="Instagram">
@@ -310,7 +246,6 @@
     <p class="footer-trademark">PureStreets<sup>TM</sup> 2026</p>
   </footer>
 
-
   <aside class="purebot" data-purebot aria-label="PureBot website assistant">
     <button class="purebot-toggle" type="button" data-purebot-toggle aria-expanded="false" aria-label="Open PureBot">
       <img src="assets/img/figure.png" alt="" aria-hidden="true" />
@@ -324,14 +259,12 @@
         <button type="button" data-purebot-close aria-label="Close PureBot">x</button>
       </header>
       <div class="purebot-messages" data-purebot-messages aria-live="polite">
-        <p class="purebot-message purebot-message--bot">Assalamu alaikum, how can i help you?</p>
+        <p class="purebot-message purebot-message--bot">Assalamu alaikum, how can I help you?</p>
       </div>
       <div class="purebot-prompts" aria-label="Quick PureBot questions">
         <button type="button" data-purebot-prompt="events">Upcoming events</button>
         <button type="button" data-purebot-prompt="contact">Contact details</button>
-        <button type="button" data-purebot-prompt="competition">ISOC competition</button>
         <a href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Partner form</a>
-        <a href="https://tally.so/r/3xLRX5" target="_blank" rel="noreferrer">WhatsApp network</a>
       </div>
       <form class="purebot-form" data-purebot-form>
         <input type="text" data-purebot-input placeholder="Ask PureBot..." aria-label="Ask PureBot" autocomplete="off" />
@@ -342,33 +275,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -4,12 +4,7 @@ const navToggle = document.querySelector('[data-nav-toggle]');
 const navLinks = [...document.querySelectorAll('.site-nav a')];
 const samePageNavLinks = navLinks.filter((link) => link.getAttribute('href')?.startsWith('#'));
 const counters = [...document.querySelectorAll('[data-count]')];
-const competitionRows = [...document.querySelectorAll('[data-team]')];
-const resetCompetition = document.querySelector('[data-reset-competition]');
-const leaderName = document.querySelector('[data-leader-name]');
-const leaderDetail = document.querySelector('[data-leader-detail]');
 const revealItems = [...document.querySelectorAll('[data-reveal]')];
-const storageKey = 'purestreets-isoc-competition';
 
 function setHeaderState() {
   if (!header) return;
@@ -91,76 +86,6 @@ if ('IntersectionObserver' in window) {
   revealItems.forEach((item) => item.classList.add('is-visible'));
 }
 
-function readScores() {
-  try {
-    return JSON.parse(window.localStorage.getItem(storageKey)) || {};
-  } catch {
-    return {};
-  }
-}
-
-function writeScores(scores) {
-  window.localStorage.setItem(storageKey, JSON.stringify(scores));
-}
-
-function getTeamScores(row, scores) {
-  const team = row.dataset.team;
-  return scores[team] || { brothers: 0, sisters: 0 };
-}
-
-function renderCompetition() {
-  if (!competitionRows.length) return;
-
-  const scores = readScores();
-  let leader = null;
-
-  competitionRows.forEach((row) => {
-    const teamScores = getTeamScores(row, scores);
-    const total = teamScores.brothers + teamScores.sisters;
-
-    row.querySelector('[data-score="brothers"]').textContent = teamScores.brothers;
-    row.querySelector('[data-score="sisters"]').textContent = teamScores.sisters;
-    row.querySelector('[data-team-total]').textContent = total;
-    row.classList.remove('is-leading');
-
-    if (!leader || total > leader.total) {
-      leader = { row, name: row.dataset.team, total, ...teamScores };
-    }
-  });
-
-  if (!leader || leader.total === 0) {
-    if (leaderName) leaderName.textContent = 'Waiting for scores';
-    if (leaderDetail) leaderDetail.textContent = 'Add bags below to start the competition.';
-    return;
-  }
-
-  leader.row.classList.add('is-leading');
-  if (leaderName) leaderName.textContent = leader.name;
-  if (leaderDetail) leaderDetail.textContent = `${leader.total} bags total: ${leader.brothers} brothers, ${leader.sisters} sisters.`;
-}
-
-competitionRows.forEach((row) => {
-  row.addEventListener('click', (event) => {
-    const plusButton = event.target.closest('[data-score-plus]');
-    const minusButton = event.target.closest('[data-score-minus]');
-    if (!plusButton && !minusButton) return;
-
-    const group = plusButton?.dataset.scorePlus || minusButton?.dataset.scoreMinus;
-    const team = row.dataset.team;
-    const scores = readScores();
-    scores[team] ||= { brothers: 0, sisters: 0 };
-    const direction = plusButton ? 1 : -1;
-    scores[team][group] = Math.max(0, scores[team][group] + direction);
-    writeScores(scores);
-    renderCompetition();
-  });
-});
-
-resetCompetition?.addEventListener('click', () => {
-  window.localStorage.removeItem(storageKey);
-  renderCompetition();
-});
-
 function initPureBot() {
   const bot = document.querySelector('[data-purebot]');
   if (!bot) return;
@@ -184,12 +109,12 @@ function initPureBot() {
 
   function navSummary() {
     const items = navLinks.map((link) => link.textContent.trim()).filter(Boolean);
-    return items.length ? items.join(', ') : 'Mission, Events, Impact, Volunteer, Mosques & ISOCs, Charities, Work with us, Our team, Contact';
+    return items.length ? items.join(', ') : 'Get involved, Our team, Contact';
   }
 
   function upcomingSessionsReply() {
     const cards = [...document.querySelectorAll('.pickup-card')];
-    if (!cards.length) return 'The latest event cards are on the home page under Events: index.html#pickups.';
+    if (!cards.length) return 'There are no upcoming event cards on the page at the moment. Check back soon or email purestreets0@gmail.com for the latest sessions.';
 
     const sessions = cards.map((card) => {
       const date = card.querySelector('time')?.textContent.trim();
@@ -203,36 +128,29 @@ function initPureBot() {
 
   function contactReply() {
     const email = linkFor(/^mailto:/i, 'mailto:purestreets0@gmail.com').replace('mailto:', '');
-    const work = linkFor(/work with us/i, 'work-with-us.html');
+    const work = linkFor(/work with us/i, 'get-involved.html#work-with-us');
     const partner = linkFor(/partner form|MeP2jX/i, 'https://tally.so/r/MeP2jX');
-    const whatsapp = linkFor(/whatsapp network|3xLRX5/i, 'https://tally.so/r/3xLRX5');
-    return `Contact PureStreets at ${email}. Work with us: ${work}. Partner form: ${partner}. WhatsApp network: ${whatsapp}.`;
-  }
-
-  function competitionReply() {
-    const page = linkFor(/mosques.*isocs/i, 'mosques-isocs.html');
-    return `The inter-ISOC competition is a London-based competition encouraging Islamic societies to clean up their streets. To get involved visit ${page}.`;
+    return `Contact PureStreets at ${email}. Work with us: ${work}. Partner form: ${partner}.`;
   }
 
   function guideReply() {
-    const guide = linkFor(/community-litter-pick-guide|open the guide|pdf/i, 'mosques-isocs.html');
+    const guide = linkFor(/community-litter-pick-guide|open the guide|pdf/i, 'get-involved.html');
     return `The free litter pick guide is available here: ${guide}.`;
   }
 
   function volunteerReply() {
-    const volunteer = linkFor(/volunteer/i, 'volunteer-month.html');
-    const whatsapp = linkFor(/whatsapp network|3xLRX5/i, 'https://tally.so/r/3xLRX5');
-    return `Volunteer tools are on: ${volunteer}. The WhatsApp network application is here: ${whatsapp}.`;
+    const volunteer = linkFor(/volunteer|get involved/i, 'get-involved.html');
+    return `Volunteer information is on: ${volunteer}.`;
   }
 
   function charityReply() {
-    const charities = linkFor(/charit/i, 'charities.html');
+    const charities = linkFor(/charit|get involved/i, 'get-involved.html');
     const partner = linkFor(/partner form|MeP2jX/i, 'https://tally.so/r/MeP2jX');
     return `Charity partnership information is on: ${charities}. The partner form is here: ${partner}.`;
   }
 
   function workReply() {
-    const work = linkFor(/work with us/i, 'work-with-us.html');
+    const work = linkFor(/work with us/i, 'get-involved.html#work-with-us');
     const form = linkFor(/MeP2jX|work with us form/i, 'https://tally.so/r/MeP2jX');
     return `The Work with us page is here: ${work}. Register your interest with this form: ${form}.`;
   }
@@ -240,12 +158,10 @@ function initPureBot() {
   const replies = {
     events: upcomingSessionsReply,
     contact: contactReply,
-    competition: competitionReply,
     guide: guideReply,
     navigate: () => `Use the top menu to visit: ${navSummary()}.`,
     volunteer: volunteerReply,
     charity: charityReply,
-    whatsappNetwork: () => `Apply to join the PureStreets WhatsApp network here: ${linkFor(/whatsapp network|3xLRX5/i, 'https://tally.so/r/3xLRX5')}`,
     work: workReply,
     partner: () => `Partner with PureStreets here: ${linkFor(/partner form|MeP2jX/i, 'https://tally.so/r/MeP2jX')}`
   };
@@ -276,7 +192,7 @@ function initPureBot() {
         linkPattern.lastIndex = 0;
         const link = document.createElement('a');
         link.href = part;
-        link.textContent = part.includes('mosques-isocs.html') ? 'Mosques & ISOCs page' : part;
+        link.textContent = part.includes('get-involved.html') ? 'Get involved page' : part;
         if (/^https?:\/\//.test(part)) {
           link.target = '_blank';
           link.rel = 'noreferrer';
@@ -297,15 +213,13 @@ function initPureBot() {
     const text = question.toLowerCase();
     if (/date|event|upcoming|when|pickup|pick up|session/.test(text)) return replyFor('events');
     if (/contact|email|social|instagram|facebook|linkedin|tiktok|phone/.test(text)) return replyFor('contact');
-    if (/competition|isoc|counter|tally|brother|sister|score/.test(text)) return replyFor('competition');
-    if (/volunteer|points|point|leaderboard|month|nomination|nominate/.test(text)) return replyFor('volunteer');
-    if (/whatsapp|network|application|apply/.test(text)) return replyFor('whatsappNetwork');
+    if (/volunteer|points|point|leaderboard|month|nomination|nominate|application|apply/.test(text)) return replyFor('volunteer');
     if (/charity|charities|islamic relief|muslim council|mcb|campaign partner/.test(text)) return replyFor('charity');
     if (/guide|pdf|resource|mosque|organisation|organization/.test(text)) return replyFor('guide');
     if (/work with us|work|team|environment|tech|design/.test(text)) return replyFor('work');
     if (/where|navigate|page|link|menu|find/.test(text)) return replyFor('navigate');
     if (/partner|form|tally|collab|collaborate/.test(text)) return replyFor('partner');
-    return `I can help with the latest pickup cards, contact links, forms, the ISOC counter, the guide, volunteering, charities, Work with us, or navigation. Current menu: ${navSummary()}.`;
+    return `I can help with the latest pickup cards, contact links, forms, the guide, volunteering, charities, Work with us, or navigation. Current menu: ${navSummary()}.`;
   }
 
   toggle.addEventListener('click', () => setOpen(!bot.classList.contains('is-open')));
@@ -466,7 +380,6 @@ function initVolunteerTracker() {
 }
 initPureBot();
 initVolunteerTracker();
-renderCompetition();
 setHeaderState();
 window.addEventListener('scroll', setHeaderState, { passive: true });
 

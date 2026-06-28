@@ -11,8 +11,8 @@
   --coral-text: #b8432e; /* darker coral for small label text: >=4.5:1 on #fbf8ef/#ffffff/#fffdf7/#f4efe1 */
   --line: rgba(23, 32, 27, 0.14);
   --shadow: 0 24px 70px rgba(18, 60, 43, 0.18);
-  /* rendered fixed-header height = ~28px chrome + 1.4 * logo-width (clamp(78,8vw,112)) */
-  --header-h: clamp(137px, calc(11.2vw + 28px), 185px);
+  /* rendered fixed-header height = 16px padding + logo-height (clamp(52,6vw,76)) */
+  --header-h: clamp(68px, calc(6vw + 16px), 92px);
 }
 
 * {
@@ -57,7 +57,7 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 14px clamp(18px, 4vw, 54px);
+  padding: 8px clamp(18px, 4vw, 54px);
   color: var(--white);
   transition: background 180ms ease, box-shadow 180ms ease, color 180ms ease;
 }
@@ -73,14 +73,15 @@ textarea {
 .brand {
   display: inline-flex;
   align-items: center;
-  width: clamp(78px, 8vw, 112px);
+  width: auto;
 }
 
-/* T7.3: reserve the logo's intrinsic box (343x480) before load to avoid CLS;
-   height:auto keeps the rendered size identical to the current layout. */
+/* Logo is height-driven so the header height stays predictable regardless of viewport;
+   aspect-ratio reserves the intrinsic box (343×480) before load to avoid CLS. */
 .brand img {
   aspect-ratio: 343 / 480;
-  height: auto;
+  height: clamp(52px, 6vw, 76px);
+  width: auto;
 }
 
 .site-nav {
@@ -189,33 +190,6 @@ textarea {
 .impact-copy .eyebrow,
 .kit-section .eyebrow {
   color: var(--coral);
-}
-.hero__overlap {
-  display: grid;
-  gap: clamp(6px, 1.4vw, 14px);
-  width: min(100%, 780px);
-  margin-bottom: clamp(16px, 3vw, 28px);
-}
-
-.hero__overlap span,
-.hero__overlap strong {
-  display: block;
-  letter-spacing: 0;
-  line-height: 1;
-}
-
-.hero__overlap span {
-  overflow-wrap: anywhere;
-  color: rgba(255, 255, 255, 0.16);
-  font-size: clamp(3.2rem, 8vw, 8rem);
-  font-weight: 800;
-}
-
-.hero__overlap strong {
-  color: var(--lime);
-  font-size: clamp(1.45rem, 3.4vw, 3.35rem);
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 h1,
@@ -327,9 +301,12 @@ h3 {
 }
 
 .section__heading h2,
-.impact-copy h2,
-.join-section h2 {
+.impact-copy h2 {
   margin-bottom: 0;
+}
+
+.join-section h2 {
+  margin-bottom: clamp(14px, 2.5vw, 22px);
 }
 
 .intro-copy {
@@ -346,6 +323,10 @@ h3 {
   background: #f7f0e2;
 }
 
+.value-band__heading {
+  text-align: center;
+}
+
 .value-band__heading h2 {
   display: inline-flex;
   align-items: center;
@@ -358,13 +339,7 @@ h3 {
 }
 
 .value-band__heading h2::after {
-  content: "";
-  width: 0.86rem;
-  height: 0.86rem;
-  border: 2px solid var(--coral);
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 3px #f7f0e2;
-  background: var(--coral);
+  display: none;
 }
 
 .value-band__grid {
@@ -372,6 +347,7 @@ h3 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   max-width: 860px;
+  margin: 0 auto;
 }
 
 .value-band article {
@@ -467,9 +443,11 @@ h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 68px;
+  min-width: 110px;
   min-height: 42px;
   border-radius: 8px;
+  padding: 0 16px;
+  white-space: nowrap;
   color: var(--white);
   background: var(--green);
   font-weight: 800;
@@ -789,6 +767,14 @@ h3 {
   color: var(--green-dark);
 }
 
+.campaign-hero__logo {
+  display: block;
+  width: auto;
+  max-width: min(160px, 42vw);
+  height: auto;
+  margin: 0 0 20px;
+}
+
 .partner-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -823,152 +809,6 @@ h3 {
 .partner-grid p {
   color: var(--muted);
   line-height: 1.7;
-}
-
-.competition-section {
-  padding: clamp(72px, 10vw, 132px) clamp(18px, 6vw, 86px);
-  background: #fffdf7;
-}
-
-.competition-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  align-items: end;
-  margin-bottom: 26px;
-}
-
-.competition-head h2 {
-  margin-bottom: 12px;
-}
-
-.leaderboard-title {
-  font-family: Arial, Helvetica, sans-serif;
-  font-style: normal;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-
-.competition-head p {
-  max-width: 720px;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.leader-card {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 18px;
-  align-items: center;
-  margin-bottom: 18px;
-  border-radius: 8px;
-  padding: 18px 20px;
-  color: var(--white);
-  background: var(--green-dark);
-  box-shadow: var(--shadow);
-}
-
-.leader-card span {
-  color: var(--lime);
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.leader-card strong {
-  font-size: clamp(1.4rem, 3vw, 2.4rem);
-}
-
-.leader-card p {
-  justify-self: end;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.competition-table {
-  display: grid;
-  gap: 10px;
-}
-
-.competition-row {
-  display: grid;
-  grid-template-columns: minmax(220px, 1.1fr) minmax(150px, 0.55fr) minmax(150px, 0.55fr) 92px;
-  gap: 12px;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 14px;
-  background: rgba(255, 255, 255, 0.82);
-}
-
-.competition-row--head {
-  color: var(--green-dark);
-  background: transparent;
-  border-color: transparent;
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.team-name {
-  display: grid;
-  gap: 4px;
-}
-
-.team-name strong {
-  font-size: 1rem;
-}
-
-.team-name small {
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-.score-control {
-  display: grid;
-  grid-template-columns: 38px minmax(42px, 1fr) 38px;
-  align-items: center;
-  min-height: 44px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fffdf7;
-}
-
-.score-control button {
-  width: 38px;
-  height: 44px;
-  border: 0;
-  color: var(--green-dark);
-  background: transparent;
-  font-size: 1.25rem;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.score-control button:hover {
-  background: rgba(216, 243, 95, 0.45);
-}
-
-.score-control strong {
-  text-align: center;
-  font-size: 1.18rem;
-}
-
-.team-total {
-  display: grid;
-  place-items: center;
-  min-height: 48px;
-  border-radius: 8px;
-  color: var(--green-dark);
-  background: var(--lime);
-  font-size: 1.28rem;
-}
-
-.competition-row.is-leading {
-  border-color: rgba(39, 100, 71, 0.55);
-  box-shadow: 0 18px 42px rgba(39, 100, 71, 0.14);
 }
 
 .kit-section {
@@ -1031,43 +871,14 @@ h3 {
     border-bottom: 0;
   }
 
-  .competition-head,
-  .leader-card {
-    align-items: stretch;
-    grid-template-columns: 1fr;
-    flex-direction: column;
-  }
-
-  .leader-card p {
-    justify-self: start;
-  }
-
-  .competition-row--head {
-    display: none;
-  }
-
-  .competition-row {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .team-name,
-  .team-total {
-    grid-column: 1 / -1;
-  }
-
   .kit-list {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 560px) {
-  .campaign-hero .button--dark,
-  .competition-head .button {
+  .campaign-hero .button--dark {
     width: 100%;
-  }
-
-  .competition-row {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -2026,12 +1837,17 @@ h3 {
 
 .site-footer {
   display: grid;
-  grid-template-columns: minmax(180px, 0.9fr) repeat(3, minmax(150px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, max-content));
+  justify-content: start;
   align-items: start;
   gap: clamp(22px, 4vw, 54px);
   padding: clamp(34px, 5vw, 58px) clamp(18px, 6vw, 86px) 24px;
   color: rgba(255, 255, 255, 0.78);
   background: var(--ink);
+}
+
+.footer-brand:empty {
+  display: none;
 }
 
 .footer-brand {
@@ -2052,6 +1868,15 @@ h3 {
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.45;
+}
+
+.footer-route-hint {
+  margin-top: 10px;
+  max-width: 260px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.55;
 }
 
 .footer-column {
@@ -2127,7 +1952,7 @@ h3 {
 
 .footer-trademark {
   grid-column: 1 / -1;
-  justify-self: center;
+  justify-self: start;
   margin: 18px 0 0;
   color: rgba(255, 255, 255, 0.58);
   font-size: 0.88rem;
@@ -2436,21 +2261,20 @@ h3 {
   font-weight: 800;
 }
 
-.partner-logo--relief::before {
-  content: "IR";
-  background: #8f2430;
-}
-
-.partner-logo--mcb::before {
-  content: "MCB";
-  background: #6b5a2f;
-  font-size: 1.15rem;
-}
-
+.partner-logo--relief::before,
+.partner-logo--mcb::before,
 .partner-logo--lse::before {
-  content: "LSE";
-  justify-self: center;
-  background: #111;
+  content: none;
+  display: none;
+}
+
+.partner-logo--relief img,
+.partner-logo--mcb img,
+.partner-logo--lse img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  justify-self: start;
 }
 
 
@@ -2472,7 +2296,7 @@ h3 {
   width: min(100%, 360px);
   justify-self: end;
   text-align: center;
-  background: radial-gradient(circle at 50% 20%, rgba(193, 237, 79, 0.32), transparent 34%), var(--white);
+  background: var(--white);
 }
 
 .partnership-section,
@@ -2588,7 +2412,6 @@ h3 {
   min-height: 720px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #033236;
   box-shadow: var(--shadow);
 }
 
@@ -2750,6 +2573,11 @@ h3 {
   font-size: clamp(2rem, 4vw, 4rem);
 }
 
+.team-cta h2 {
+  margin: 0;
+  line-height: 1.05;
+}
+
 .team-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2831,9 +2659,14 @@ h3 {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 18px;
+  gap: 18px clamp(18px, 4vw, 48px);
   padding: clamp(42px, 7vw, 76px) clamp(18px, 6vw, 86px);
   background: var(--paper);
+}
+
+.team-cta .button {
+  flex-shrink: 0;
+  align-self: center;
 }
 
 @media (max-width: 1050px) {

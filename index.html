@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Preload the hero LCP background image (same-origin, reprioritised; matches the style.css background-image URL) -->
-  <link rel="preload" as="image" href="assets/img/hero-banner.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="assets/img/herobackground.png" fetchpriority="high" />
   <meta name="description" content="PureStreets is a grassroots community litter-picking movement inspired by faith, service, and care for the streets we share." />
   <title>PureStreets</title>
   <!-- Canonical + Open Graph / Twitter share metadata (render-neutral) -->
@@ -13,7 +13,7 @@
   <meta property="og:url" content="https://purestreets1.github.io/Purestreets/" />
   <meta property="og:title" content="PureStreets | Clean Streets, Shared Reward" />
   <meta property="og:description" content="PureStreets is a grassroots community litter-picking movement inspired by faith, service, and care for the streets we share." />
-  <meta property="og:image" content="https://purestreets1.github.io/Purestreets/assets/img/hero-banner.jpg" />
+  <meta property="og:image" content="https://purestreets1.github.io/Purestreets/assets/img/herobackground.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <!-- Structured data: Organization (site-wide) + the visible pickup-card Events -->
   <script type="application/ld+json">
@@ -25,8 +25,8 @@
         "@id": "https://purestreets1.github.io/Purestreets/#organization",
         "name": "PureStreets",
         "url": "https://purestreets1.github.io/Purestreets/",
-        "logo": "https://purestreets1.github.io/Purestreets/assets/img/logo.png",
-        "image": "https://purestreets1.github.io/Purestreets/assets/img/hero-banner.jpg",
+        "logo": "https://purestreets1.github.io/Purestreets/assets/img/Transparent%20-%20HI%20VIS%20-%20White%20TextStyle2.png",
+        "image": "https://purestreets1.github.io/Purestreets/assets/img/herobackground.png",
         "description": "PureStreets is a grassroots community litter-picking movement inspired by faith, service, and care for the streets we share.",
         "email": "purestreets0@gmail.com",
         "sameAs": [
@@ -41,7 +41,7 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
   <link rel="apple-touch-icon" href="assets/img/favicon.png" />
   <link rel="stylesheet" href="style.css" />
@@ -49,15 +49,17 @@
 <body>
   <header class="site-header" data-header>
     <a class="brand" href="#home" aria-label="PureStreets home">
-      <img src="assets/img/logo.png" alt="PureStreets" />
+      <img src="assets/img/logolong.png" alt="PureStreets" />
     </a>
     <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle>
       <span></span><span></span><span></span>
     </button>
     <nav class="site-nav" data-nav>
-      <a href="get-involved.html">Get involved</a>
-      <a href="our-team.html">Our team</a>
-      <a href="contact.html">Contact</a>
+      <a href="#path">Get Started</a>
+      <a href="mosques.html">Mosques</a>
+      <a href="isocs.html">ISOCs</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
     </nav>
   </header>
 
@@ -65,92 +67,127 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero__shade"></div>
       <div class="hero__content">
-        <h1 id="hero-title">Clean streets. Shared reward.</h1>
-        <p class="hero__text">PureStreets brings people together to remove litter, protect public spaces, and turn a simple act of service into an act of sadaqah jariyah.</p>
+        <h1 id="hero-title">Community. Faith. Action.</h1>
+        <p class="hero__text">We empower volunteers, mosques and Islamic organisations with the resources, equipment and guidance to organise litter picks and make a lasting difference in their local communities.</p>
         <div class="hero__actions">
-          <a class="button button--primary" href="get-involved.html#work-with-us">Work with us</a>
-          <a class="button button--secondary" href="get-involved.html#mosques-isocs">Start an ISOC challenge</a>
+          <a class="button button--primary hero-cta" href="#path">Start a Litter Pick</a>
         </div>
-      </div>
-      <div class="hero__aside">
-        <img class="hero__logo" src="assets/img/logo.png" alt="PureStreets" width="343" height="480" />
-        <aside class="hero__panel" aria-label="Next PureStreets pickup">
-          <span class="panel-label">Next community clean</span>
-          <strong>Cricklewood Litter Pick</strong>
-          <p>TBC</p>
-        </aside>
       </div>
     </section>
 
-    <section id="mission" class="section section--intro">
+    <section id="path" class="path-section" aria-labelledby="path-title">
+      <div class="section-kicker">
+        <h2 id="path-title">How would you like to get involved?</h2>
+        <p>Choose the route that best describes you and we will point you towards the most useful support.</p>
+      </div>
+      <div class="path-grid">
+        <a class="path-card" href="mosques.html" data-reveal="up">
+          <span class="path-card__icon" aria-hidden="true">
+            <img src="assets/img/mosquetriangle.png" alt="" loading="lazy" />
+          </span>
+          <h3>For Mosques</h3>
+          <p>Organise a community litter pick with free guidance and equipment.</p>
+          <span class="path-card__cta">Get Started</span>
+        </a>
+        <a class="path-card" href="volunteers.html" data-reveal="up" style="--reveal-delay: 120ms;">
+          <span class="path-card__icon" aria-hidden="true">
+            <img src="assets/img/volunteer.png" alt="" loading="lazy" />
+          </span>
+          <h3>I'm a Volunteer</h3>
+          <p>Join a local litter pick or learn how to help your area.</p>
+          <span class="path-card__cta path-card__cta--soon">Coming soon</span>
+        </a>
+        <a class="path-card" href="isocs.html" data-reveal="up" style="--reveal-delay: 240ms;">
+          <span class="path-card__icon" aria-hidden="true">
+            <img src="assets/img/isoc.png" alt="" loading="lazy" />
+          </span>
+          <h3>I'm part of an ISOC</h3>
+          <p>Compete with universities across the UK in our annual litter-picking challenge.</p>
+          <span class="path-card__cta path-card__cta--soon">Coming soon</span>
+        </a>
+        <a class="path-card" href="organisation.html" data-reveal="up" style="--reveal-delay: 360ms;">
+          <span class="path-card__icon" aria-hidden="true">
+            <img src="assets/img/organisationicon.png" alt="" loading="lazy" />
+          </span>
+          <h3>For Organisations</h3>
+          <p>Partner with us to support cleaner communities and local volunteering.</p>
+          <span class="path-card__cta path-card__cta--soon">Coming soon</span>
+        </a>
+      </div>
+    </section>
+
+    <section id="about" class="section section--intro">
       <div class="section__heading">
-        <h2 class="hadith-heading" data-reveal="down">Abu Huraira reported: The Messenger &#65018; said:</h2>
-        <p class="hadith-arabic" data-reveal="down" style="--reveal-delay: 240ms;" lang="ar" dir="rtl">&#1608;&#1614;&#1578;&#1615;&#1605;&#1616;&#1610;&#1591;&#1615; &#1575;&#1604;&#1571;&#1614;&#1584;&#1614;&#1609; &#1593;&#1614;&#1606;&#1616; &#1575;&#1604;&#1591;&#1614;&#1617;&#1585;&#1616;&#1610;&#1602;&#1616; &#1589;&#1614;&#1583;&#1614;&#1602;&#1614;&#1577;&#1612;</p>
-        <p class="hadith-translation" data-reveal="down" style="--reveal-delay: 360ms;">&ldquo;Removing harmful objects from the pathway is an act of charity&rdquo;</p>
-        <p class="hadith-source" data-reveal="down" style="--reveal-delay: 480ms;">(Bukhari &amp; Muslim)</p>
+        <div class="hadith-card" data-reveal="down">
+          <h2 class="hadith-heading">The Messenger &#65018; said:</h2>
+          <p class="hadith-arabic" lang="ar" dir="rtl">&#1608;&#1614;&#1578;&#1615;&#1605;&#1616;&#1610;&#1591;&#1615; &#1575;&#1604;&#1571;&#1614;&#1584;&#1614;&#1609; &#1593;&#1614;&#1606;&#1616; &#1575;&#1604;&#1591;&#1614;&#1617;&#1585;&#1616;&#1610;&#1602;&#1616; &#1589;&#1614;&#1583;&#1614;&#1602;&#1614;&#1577;&#1612;</p>
+          <p class="hadith-translation">&ldquo;Removing harmful objects from the pathway is an act of charity&rdquo;</p>
+          <p class="hadith-source">Reported by Abu Huraira (Bukhari &amp; Muslim)</p>
+        </div>
       </div>
       <div class="intro-copy" data-reveal="down" style="--reveal-delay: 600ms;">
-        <p>PureStreets is a <strong>local volunteer movement</strong> inspired by the Prophetic Sunnah. Founded by a group of students, we aim to clean the streets around us with <strong>sincerity, good manners, and practical care</strong> for the people who walk by them every day.</p>
+        <h2>Rooted in service, built for communities.</h2>
+        <p>PureStreets is a <strong>local volunteer movement</strong> inspired by the Prophetic Sunnah. We help Muslims turn care for shared streets into organised, repeatable community action.</p>
         <p><strong>Everyone</strong> has a place here: families, students, mosques, brothers and sisters groups, and neighbours who simply want their area to feel loved.</p>
-      </div>
-    </section>
-
-    <section class="value-band" aria-labelledby="aims-title">
-      <div class="value-band__heading">
-        <h2 id="aims-title">What We Stand For</h2>
-      </div>
-      <div class="value-band__grid">
-        <article>
-          <span>01</span>
-          <p>Put Islamic values of stewardship, care for the earth, and cleanliness into action</p>
-        </article>
-        <article>
-          <span>02</span>
-          <p>Build positive relationships with our neighbours and the wider community</p>
-        </article>
-        <article>
-          <span>03</span>
-          <p>Promote physical and mental wellbeing through active volunteering</p>
-        </article>
-        <article>
-          <span>04</span>
-          <p>Strengthen unity within the community and build meaningful connections through shared service</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="impact" class="impact-section">
-      <div class="impact-visual">
-        <img src="assets/img/figure.png" alt="PureStreets volunteer figure" />
-      </div>
-      <div class="impact-copy">
-        <h2>Small teams can change the feeling of a whole street.</h2>
-        <div class="stats" aria-label="PureStreets community stats">
-          <div><strong data-count="42">0</strong><span>Bags collected</span></div>
-          <div><strong data-count="18">0</strong><span>Routes cleaned</span></div>
-          <div><strong data-count="96">0</strong><span>Volunteer hours</span></div>
+        <div id="handbook" class="intro-handbook" aria-labelledby="intro-handbook-title">
+          <div>
+            <h3 id="intro-handbook-title">Community Litter Pick Handbook</h3>
+            <p>A practical guide for planning routes, briefing volunteers, arranging equipment and running a safe, organised clean-up.</p>
+            <a class="button button--primary" href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Open the Handbook</a>
+          </div>
+          <a class="guide-preview intro-handbook__preview" href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer" aria-label="Open the Community Litter Pick Handbook PDF">
+            <img src="assets/img/handbookfrontcover.png" alt="Community Litter Pick Handbook front cover" loading="lazy" />
+          </a>
         </div>
       </div>
     </section>
 
-    <section id="join" class="join-section">
-      <div>
-        <h2>Come with clean hands and leave with a cleaner street.</h2>
-        <p>Tell us which route you want to join and how many people are coming. We will send the meeting point, safety notes, and what to bring.</p>
+    <section id="contact" class="home-message-section" aria-labelledby="home-message-title">
+      <div class="home-message-copy">
+        <h2 id="home-message-title">Send us a message.</h2>
+        <p>Ask about starting a litter pick, mosque support, volunteering, partnerships or anything else PureStreets can help with.</p>
       </div>
-      <div class="tally-embed tally-embed--contact">
-        <iframe src="https://tally.so/embed/MeP2jX?alignLeft=1&amp;hideTitle=1&amp;dynamicHeight=1" title="PureStreets contact form" loading="lazy"></iframe>
-        <a class="button button--primary" href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Open form</a>
-      </div>
+      <form class="home-message-form" action="https://formsubmit.co/purestreets0@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="New message from the PureStreets homepage" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <label>
+          <span>Name</span>
+          <input type="text" name="name" autocomplete="name" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+        <label>
+          <span>Subject</span>
+          <input type="text" name="subject" autocomplete="off" />
+        </label>
+        <label>
+          <span>Message</span>
+          <textarea name="message" rows="5" required></textarea>
+        </label>
+        <button class="button button--primary" type="submit">Send Message</button>
+      </form>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="footer-brand" aria-hidden="true"></div>
     <nav class="footer-column footer-explore" aria-label="Explore PureStreets">
+      <h2>Start</h2>
+      <a href="#path">Choose your route</a>
+      <a href="mosques.html">Mosques</a>
+      <a href="volunteers.html">Volunteers</a>
+      <a href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Starter Handbook</a>
+    </nav>
+    <nav class="footer-column footer-campaigns" aria-label="PureStreets campaigns and impact">
       <h2>Explore</h2>
-      <a href="get-involved.html">Get involved</a>
-      <a href="our-team.html">Our team</a>
+      <a href="isocs.html">ISOC Challenge</a>
+      <a href="organisation.html">Organisations</a>
+      <a href="get-involved.html">Get Involved</a>
+      <a href="#about">About</a>
       <a href="contact.html">Contact</a>
     </nav>
     <nav class="footer-column footer-legal" aria-label="Legal links">
@@ -190,57 +227,6 @@
     </nav>
     <p class="footer-trademark">PureStreets<sup>TM</sup> 2026</p>
   </footer>
-
-
-  <aside class="purebot" data-purebot aria-label="PureBot website assistant">
-    <button class="purebot-toggle" type="button" data-purebot-toggle aria-expanded="false" aria-label="Open PureBot">
-      <img src="assets/img/figure.png" alt="" aria-hidden="true" />
-    </button>
-    <section class="purebot-panel" data-purebot-panel aria-hidden="true">
-      <header class="purebot-header">
-        <div>
-          <strong>PureBot</strong>
-          <span>Your cleaning companion</span>
-        </div>
-        <button type="button" data-purebot-close aria-label="Close PureBot">x</button>
-      </header>
-      <div class="purebot-messages" data-purebot-messages aria-live="polite">
-        <p class="purebot-message purebot-message--bot">Assalamu alaikum, how can I help you?</p>
-      </div>
-      <div class="purebot-prompts" aria-label="Quick PureBot questions">
-        <button type="button" data-purebot-prompt="events">Upcoming events</button>
-        <button type="button" data-purebot-prompt="contact">Contact details</button>
-        <a href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Partner form</a>
-      </div>
-      <form class="purebot-form" data-purebot-form>
-        <input type="text" data-purebot-input placeholder="Ask PureBot..." aria-label="Ask PureBot" autocomplete="off" />
-        <button type="submit">Send</button>
-      </form>
-    </section>
-  </aside>
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

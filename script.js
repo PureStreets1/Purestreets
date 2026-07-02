@@ -1,4 +1,7 @@
 const header = document.querySelector('[data-header]');
+const hero = document.querySelector('.hero');
+const heroTitle = document.querySelector('#hero-title');
+const pageTitle = heroTitle || document.querySelector('.group-hero h1, .campaign-hero h1, .contact-hero h1, .volunteer-hero h1, .charity-hero h1, .work-hero h1, .team-hero h1');
 const nav = document.querySelector('[data-nav]');
 const navToggle = document.querySelector('[data-nav-toggle]');
 const navLinks = [...document.querySelectorAll('.site-nav a')];
@@ -8,7 +11,16 @@ const revealItems = [...document.querySelectorAll('[data-reveal]')];
 
 function setHeaderState() {
   if (!header) return;
-  header.classList.toggle('is-scrolled', window.scrollY > 18 || document.body.classList.contains('subpage'));
+  const isSubpage = document.body.classList.contains('subpage');
+  const isOpen = header.classList.contains('is-open');
+  const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 0;
+  const headlineClearance = header.offsetHeight + 24;
+  const headingReachedHeader = pageTitle ? pageTitle.getBoundingClientRect().top <= headlineClearance : false;
+  const heroHasPassed = hero ? window.scrollY + header.offsetHeight >= heroBottom : false;
+  const shouldHide = !isOpen && (isSubpage ? headingReachedHeader : (headingReachedHeader || heroHasPassed));
+
+  header.classList.toggle('is-scrolled', window.scrollY > 18 || isSubpage);
+  header.classList.toggle('is-hidden', shouldHide);
 }
 
 if (navToggle && nav && header) {
@@ -17,6 +29,7 @@ if (navToggle && nav && header) {
     header.classList.toggle('is-open', isOpen);
     navToggle.setAttribute('aria-expanded', String(isOpen));
     navToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+    setHeaderState();
   });
 }
 
@@ -26,6 +39,47 @@ navLinks.forEach((link) => {
     header?.classList.remove('is-open');
     navToggle?.setAttribute('aria-expanded', 'false');
     navToggle?.setAttribute('aria-label', 'Open menu');
+    setHeaderState();
+  });
+});
+
+const comingSoonPages = new Set(['volunteers.html', 'isocs.html', 'organisation.html']);
+const comingSoonLinks = [...document.querySelectorAll('a[href]')].filter((link) => {
+  try {
+    const url = new URL(link.getAttribute('href'), window.location.href);
+    return comingSoonPages.has(url.pathname.split('/').pop());
+  } catch {
+    return false;
+  }
+});
+
+let comingSoonTimer;
+
+function showComingSoonMessage() {
+  let message = document.querySelector('[data-coming-soon-message]');
+
+  if (!message) {
+    message = document.createElement('div');
+    message.className = 'coming-soon-message';
+    message.dataset.comingSoonMessage = '';
+    message.setAttribute('role', 'status');
+    message.setAttribute('aria-live', 'polite');
+    message.textContent = 'Coming soon';
+    document.body.appendChild(message);
+  }
+
+  window.clearTimeout(comingSoonTimer);
+  message.classList.add('is-visible');
+  comingSoonTimer = window.setTimeout(() => {
+    message.classList.remove('is-visible');
+  }, 2200);
+}
+
+comingSoonLinks.forEach((link) => {
+  link.setAttribute('aria-label', `${link.textContent.trim() || 'This page'} - coming soon`);
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    showComingSoonMessage();
   });
 });
 
@@ -244,6 +298,28 @@ function initPureBot() {
 }
 
 
+function initRippleEffect() {
+  document.querySelectorAll('.hero-cta').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      const ripple = document.createElement('span');
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = event.clientX || rect.left + rect.width / 2;
+      const y = event.clientY || rect.top + rect.height / 2;
+
+      ripple.className = 'ripple';
+      ripple.style.width = `${size}px`;
+      ripple.style.height = `${size}px`;
+      ripple.style.left = `${x - rect.left - size / 2}px`;
+      ripple.style.top = `${y - rect.top - size / 2}px`;
+
+      button.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+    });
+  });
+}
+
+
 function initVolunteerTracker() {
   const form = document.querySelector('[data-volunteer-form]');
   const rowsTarget = document.querySelector('[data-volunteer-rows]');
@@ -427,8 +503,9 @@ function initVolunteerTracker() {
 
   renderBoard();
 }
+initRippleEffect();
 initPureBot();
 initVolunteerTracker();
 setHeaderState();
 window.addEventListener('scroll', setHeaderState, { passive: true });
-
+window.addEventListener('resize', setHeaderState);

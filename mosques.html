@@ -83,7 +83,7 @@
             <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
             <div class="mosque-carousel-form__top">
-              <p data-mosque-step-label>Step 1 of 6</p>
+              <p data-mosque-step-label>Step 1 of 7</p>
               <div class="mosque-carousel-form__progress" aria-hidden="true">
                 <span data-mosque-progress></span>
               </div>
@@ -171,7 +171,15 @@
 
                 <section class="mosque-carousel-form__slide" data-mosque-slide aria-labelledby="mosque-form-step-6">
                   <label class="mosque-carousel-form__field">
-                    <span id="mosque-form-step-6">What is your mobile number?</span>
+                    <span id="mosque-form-step-6">What is your email address?</span>
+                    <small>We will send a copy of your request to this email.</small>
+                    <input type="email" name="email" autocomplete="email" required />
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-mosque-slide aria-labelledby="mosque-form-step-7">
+                  <label class="mosque-carousel-form__field">
+                    <span id="mosque-form-step-7">What is your mobile number?</span>
                     <small>We'll use this to get in touch about supporting your mosque.</small>
                     <input type="tel" name="Phone number" autocomplete="tel" inputmode="tel" required pattern="^[+()0-9\s-]{7,20}$" />
                   </label>
@@ -188,7 +196,7 @@
 
             <div class="mosque-carousel-form__success" data-mosque-success role="status" aria-live="polite" tabindex="-1" hidden>
               <strong>Thank you.</strong>
-              <p>Your request has been sent. A member of the PureStreets team will be in touch soon.</p>
+              <p>Your request has been sent. A copy has been emailed to you, and a member of the PureStreets team will be in touch soon.</p>
               <a class="button button--primary hero-cta mosque-carousel-form__guide" href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Open the community handbook</a>
             </div>
           </form>

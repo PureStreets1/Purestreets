@@ -911,12 +911,14 @@ function initMosqueCarouselForm() {
 
     const value = input.value.trim();
     const isPhone = input.type === 'tel';
+    const isEmail = input.type === 'email';
     const phoneIsValid = /^[+()0-9\s-]{7,20}$/.test(value);
-    const isValid = value.length > 0 && (!isPhone || phoneIsValid);
+    const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    const isValid = value.length > 0 && (!isPhone || phoneIsValid) && (!isEmail || emailIsValid);
 
     if (!isValid) {
       input.setAttribute('aria-invalid', 'true');
-      setError(isPhone ? 'Please enter a valid phone number.' : 'Please complete this field.');
+      setError(isPhone ? 'Please enter a valid phone number.' : isEmail ? 'Please enter a valid email address.' : 'Please complete this field.');
       input.focus();
     }
 
@@ -941,6 +943,25 @@ function initMosqueCarouselForm() {
     success.focus?.();
   }
 
+  function showReturnedSuccess() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mosque-request') !== 'sent') return false;
+
+    submitPending = true;
+    slides.forEach((slide) => {
+      slide.hidden = true;
+      slide.setAttribute('aria-hidden', 'true');
+      slide.toggleAttribute('inert', true);
+    });
+    setCarouselButtonVisible(backButton, false);
+    setCarouselButtonVisible(nextButton, false);
+    setCarouselButtonVisible(submitButton, false);
+    setError();
+    showSuccess();
+    form.scrollIntoView({ block: 'center' });
+    return true;
+  }
+
   function buildMosquePayload() {
     const data = new FormData(form);
     const supportRequested = data.getAll('Support requested').map((item) => String(item).trim()).filter(Boolean);
@@ -950,6 +971,7 @@ function initMosqueCarouselForm() {
       mosqueAddress: String(data.get('Mosque address') || '').trim(),
       supportRequested,
       contactName: String(data.get('Contact name') || '').trim(),
+      contactEmail: String(data.get('email') || '').trim(),
       phoneNumber: String(data.get('Phone number') || '').trim(),
       pickFrequency: String(data.get('Pick frequency') || '').trim(),
       additionalDetails: String(data.get('Additional details') || '').trim(),
@@ -965,6 +987,7 @@ function initMosqueCarouselForm() {
       `Address: ${payload.mosqueAddress || 'Not selected'}`,
       `Support requested: ${payload.supportRequested.join(', ')}`,
       `Contact name: ${payload.contactName || 'Not provided'}`,
+      `Email: ${payload.contactEmail || 'Not provided'}`,
       `Mobile: ${payload.phoneNumber || 'Not provided'}`,
       `Long-term pick frequency: ${payload.pickFrequency || 'Not provided'}`,
       `Additional details: ${payload.additionalDetails || 'None provided'}`,
@@ -977,6 +1000,11 @@ function initMosqueCarouselForm() {
     fallbackData.append('_template', 'table');
     fallbackData.append('_captcha', 'false');
     fallbackData.append('_next', `${window.location.origin}${window.location.pathname}?mosque-request=sent#mosque-support-steps`);
+    if (payload.contactEmail) {
+      fallbackData.append('email', payload.contactEmail);
+      fallbackData.append('_replyto', payload.contactEmail);
+      fallbackData.append('_cc', payload.contactEmail);
+    }
     fallbackData.append('message', message);
     return fallbackData;
   }
@@ -1134,6 +1162,7 @@ function initMosqueCarouselForm() {
 
   markOptions();
   setStep(0);
+  showReturnedSuccess();
 }
 
 function initGroupCarouselForms() {

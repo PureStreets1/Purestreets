@@ -44,17 +44,19 @@ function validatePayload(payload) {
   const mosqueName = cleanText(payload.mosqueName);
   const mosqueAddress = cleanText(payload.mosqueAddress);
   const contactName = cleanText(payload.contactName);
+  const contactEmail = cleanText(payload.contactEmail);
   const phoneNumber = cleanText(payload.phoneNumber);
   const pickFrequency = cleanText(payload.pickFrequency);
   const additionalDetails = cleanText(payload.additionalDetails);
   const supportRequested = normaliseSupport(payload.supportRequested);
-  const missingRequiredField = !mosqueName || !supportRequested.length || !pickFrequency || !contactName || !phoneNumber;
+  const missingRequiredField = !mosqueName || !supportRequested.length || !pickFrequency || !contactName || !contactEmail || !phoneNumber;
+  const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail);
   const phoneIsValid = /^[+()0-9\s-]{7,20}$/.test(phoneNumber);
 
   return {
-    isValid: Boolean(!missingRequiredField && phoneIsValid),
-    data: { mosqueName, mosqueAddress, contactName, phoneNumber, pickFrequency, additionalDetails, supportRequested },
-    error: missingRequiredField ? 'Missing required fields.' : 'Invalid phone number.'
+    isValid: Boolean(!missingRequiredField && emailIsValid && phoneIsValid),
+    data: { mosqueName, mosqueAddress, contactName, contactEmail, phoneNumber, pickFrequency, additionalDetails, supportRequested },
+    error: missingRequiredField ? 'Missing required fields.' : emailIsValid ? 'Invalid phone number.' : 'Invalid email address.'
   };
 }
 
@@ -66,6 +68,7 @@ function buildMessage(data) {
     `Address: ${data.mosqueAddress || 'Not selected'}`,
     `Support requested: ${data.supportRequested.join(', ')}`,
     `Contact name: ${data.contactName || 'Not provided'}`,
+    `Email: ${data.contactEmail || 'Not provided'}`,
     `Mobile: ${data.phoneNumber || 'Not provided'}`,
     `Long-term pick frequency: ${data.pickFrequency || 'Not provided'}`,
     `Additional details: ${data.additionalDetails || 'None provided'}`,
@@ -132,13 +135,19 @@ async function sendSlackNotification(text) {
   return { ok: true, status: response.status, body: responseBody };
 }
 
-async function sendEmailNotification(text) {
+async function sendEmailNotification(text, contactEmail) {
   const params = new URLSearchParams({
     _subject: 'New mosque support pack request',
     _template: 'table',
     _captcha: 'false',
     message: text
   });
+
+  if (contactEmail) {
+    params.set('email', contactEmail);
+    params.set('_replyto', contactEmail);
+    params.set('_cc', contactEmail);
+  }
 
   const response = await fetch(EMAIL_ENDPOINT, {
     method: 'POST',
@@ -175,7 +184,7 @@ module.exports = async function mosqueEnquiry(req, res) {
     const message = buildMessage(data);
     const [slackResult, emailResult] = await Promise.allSettled([
       sendSlackNotification(message),
-      sendEmailNotification(message)
+      sendEmailNotification(message, data.contactEmail)
     ]);
 
     if (slackResult.status === 'rejected') {

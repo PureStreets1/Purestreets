@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
   <link rel="apple-touch-icon" href="assets/img/favicon.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=mosque-form-8" />
 </head>
 <body class="subpage group-page">
   <header class="site-header is-scrolled" data-header>
@@ -33,10 +33,10 @@
   <main>
     <section class="group-hero group-hero--mosques" aria-labelledby="group-title">
       <div class="group-hero__content">
-        <h1 id="group-title">Mosques</h1>
-        <p>PureStreets supports mosques looking to run regular litter picks by providing a free starter litter-picking pack, practical guidance, and a free consultation to help you get started.</p>
+        <h1 id="group-title">Start a Mosque Litter Pick</h1>
+        <p>Free resources, equipment and guidance to help your mosque lead community clean-ups and organise impactful local litter picks.</p>
         <div class="hero__actions">
-          <a class="button button--primary hero-cta" href="#mosque-support-steps">Request resources for your Mosque</a>
+          <a class="button button--primary hero-cta" href="#mosque-support-steps">Request a Pack</a>
         </div>
       </div>
     </section>
@@ -48,27 +48,22 @@
       </div>
       <div class="mosque-help-summary__grid" aria-label="PureStreets mosque support benefits">
         <article class="mosque-help-card">
-          <span class="mosque-help-card__number">01</span>
+          <img src="assets/img/litterpack.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Litter picking pack</h3>
+        </article>
+        <article class="mosque-help-card">
           <img src="assets/img/onlineconsultation.png" alt="" loading="lazy" aria-hidden="true" />
           <h3>Consultation sessions</h3>
         </article>
         <article class="mosque-help-card">
-          <span class="mosque-help-card__number">02</span>
           <img src="assets/img/handbookicon.png" alt="" loading="lazy" aria-hidden="true" />
           <h3>Organising handbook</h3>
         </article>
         <article class="mosque-help-card">
-          <span class="mosque-help-card__number">03</span>
-          <img src="assets/img/litterpack.png" alt="" loading="lazy" aria-hidden="true" />
-          <h3>Free starter pack</h3>
-        </article>
-        <article class="mosque-help-card">
-          <span class="mosque-help-card__number">04</span>
           <img src="assets/img/promo.png" alt="" loading="lazy" aria-hidden="true" />
           <h3>Promotion support</h3>
         </article>
         <article class="mosque-help-card">
-          <span class="mosque-help-card__number">05</span>
           <img src="assets/img/media.png" alt="" loading="lazy" aria-hidden="true" />
           <h3>Media and design support</h3>
         </article>
@@ -77,62 +72,126 @@
 
     <section id="mosque-support-steps" class="group-next mosque-process mosque-process--patterned" aria-label="Mosque support steps">
       <div class="mosque-process__steps">
-        <article class="mosque-process__card mosque-process__card--simple">
+        <article class="mosque-process__card mosque-process__card--form">
           <div class="mosque-process__copy">
-            <span class="mosque-process__number">Step 1</span>
-            <h3>Fill in the contact form</h3>
-            <p>Tell us a little about your mosque, your local area and the kind of litter pick you are hoping to organise.</p>
-            <a class="button button--primary hero-cta mosque-process__button" href="https://tally.so/r/lbv8j5" target="_blank" rel="noreferrer">Tell us about your Mosque</a>
+            <p>Tell us a little about your Mosque.</p>
           </div>
-        </article>
-        <article class="mosque-process__card mosque-process__card--guide">
-          <div class="mosque-process__copy">
-            <span class="mosque-process__number">Step 2</span>
-            <h3>Read the free handbook while we get back to you</h3>
-            <p>While our team reviews your request, you can use the handbook to start thinking about routes, volunteer briefings, equipment and safety.</p>
-            <a class="button button--primary hero-cta mosque-process__button" href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Open the guide</a>
-          </div>
-          <a class="mosque-process__guide-preview guide-preview" href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer" aria-label="Open the Community Litter Pick Handbook PDF">
-            <img src="assets/img/handbookfrontcover.png" alt="Community Litter Pick Handbook front cover" loading="lazy" />
-          </a>
-        </article>
-        <article class="mosque-process__card mosque-process__card--simple">
-          <div class="mosque-process__copy">
-            <span class="mosque-process__number">Step 3</span>
-            <h3>We get back to you and arrange a consultation</h3>
-            <p>Our team will contact you to understand what your mosque needs, answer questions and arrange a practical consultation session.</p>
-          </div>
-        </article>
-        <article class="mosque-process__card mosque-process__card--support">
-          <div class="mosque-process__support-head">
-            <span class="mosque-process__number">Step 4</span>
-            <div>
-              <h3>Receive the support package</h3>
-              <p>Once we know what your mosque needs, we provide the practical support that makes regular litter picks easier to organise, promote and repeat. This may include:</p>
+          <form class="mosque-carousel-form" action="/api/mosque-enquiry" method="POST" data-email-fallback="https://formsubmit.co/ajax/purestreets0@gmail.com" data-mosque-form novalidate>
+            <input type="hidden" name="_subject" value="New mosque support pack request" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+            <div class="mosque-carousel-form__top">
+              <p data-mosque-step-label>Step 1 of 6</p>
+              <div class="mosque-carousel-form__progress" aria-hidden="true">
+                <span data-mosque-progress></span>
+              </div>
             </div>
-          </div>
-          <div class="mosque-support-grid" aria-label="PureStreets mosque support package">
-            <div>
-              <h4>Consultation sessions</h4>
-              <p>Plan your first litter pick, shape a simple process and understand how to get started.</p>
+
+            <div class="mosque-carousel-form__viewport">
+              <div class="mosque-carousel-form__track" data-mosque-track>
+                <section class="mosque-carousel-form__slide" data-mosque-slide aria-labelledby="mosque-form-step-1">
+                  <label class="mosque-carousel-form__field">
+                    <span id="mosque-form-step-1">What's the name of your mosque?</span>
+                    <input type="text" name="Mosque name" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="mosque-name-suggestions" data-mosque-name-input data-mosque-csv="assets/docs/MosquesJul26.csv" aria-describedby="mosque-address-message" required />
+                    <div id="mosque-name-suggestions" class="mosque-name-suggestions" data-mosque-name-list role="listbox" hidden></div>
+                    <small class="mosque-name-hint">If your mosque does not appear in the suggestions, please type its name and continue.</small>
+                  </label>
+                  <input type="hidden" name="Mosque address" data-mosque-address-input />
+                  <div class="mosque-address-match" data-mosque-address-panel hidden>
+                    <p id="mosque-address-message" data-mosque-address-message></p>
+                    <label class="mosque-address-match__select" data-mosque-address-select-wrap hidden>
+                      <span>Choose the correct address</span>
+                      <select data-mosque-address-select aria-label="Choose the correct mosque address">
+                        <option value="">Select an address</option>
+                      </select>
+                    </label>
+                  </div>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-mosque-slide aria-labelledby="mosque-form-step-2">
+                  <fieldset class="mosque-carousel-form__fieldset">
+                    <legend id="mosque-form-step-2">Which of the following would be most useful for you?</legend>
+                    <label class="mosque-option-card">
+                      <input type="checkbox" name="Support requested" value="Free starter pack" />
+                      <span>I would like a free starter pack <small>litter pickers and gloves</small></span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="checkbox" name="Support requested" value="Online consultation" />
+                      <span>I would like an online consultation on how to get started</span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="checkbox" name="Support requested" value="Promotional materials" />
+                      <span>I would like help designing promotional materials for our litter-picking events</span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="checkbox" name="Support requested" value="All of the above" data-all-support />
+                      <span>All of the above</span>
+                    </label>
+                  </fieldset>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-mosque-slide aria-labelledby="mosque-form-step-3">
+                  <fieldset class="mosque-carousel-form__fieldset">
+                    <legend id="mosque-form-step-3">How often would your mosque like to do litter picks in the long term?</legend>
+                    <label class="mosque-option-card">
+                      <input type="radio" name="Pick frequency" value="Weekly" required />
+                      <span>Weekly</span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="radio" name="Pick frequency" value="Fortnightly" />
+                      <span>Fortnightly</span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="radio" name="Pick frequency" value="Monthly" />
+                      <span>Monthly</span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="radio" name="Pick frequency" value="A few times a year" />
+                      <span>A few times a year</span>
+                    </label>
+                  </fieldset>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-mosque-slide aria-labelledby="mosque-form-step-4">
+                  <label class="mosque-carousel-form__field">
+                    <span id="mosque-form-step-4">Anything else you would like us to know?</span>
+                    <small>You can share any extra details about your mosque, your area or what support would be most helpful.</small>
+                    <textarea name="Additional details" rows="5"></textarea>
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-mosque-slide aria-labelledby="mosque-form-step-5">
+                  <label class="mosque-carousel-form__field">
+                    <span id="mosque-form-step-5">What is your name?</span>
+                    <input type="text" name="Contact name" autocomplete="name" required />
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-mosque-slide aria-labelledby="mosque-form-step-6">
+                  <label class="mosque-carousel-form__field">
+                    <span id="mosque-form-step-6">What is your mobile number?</span>
+                    <small>We'll use this to get in touch about supporting your mosque.</small>
+                    <input type="tel" name="Phone number" autocomplete="tel" inputmode="tel" required pattern="^[+()0-9\s-]{7,20}$" />
+                  </label>
+                </section>
+              </div>
             </div>
-            <div>
-              <h4>Organising handbook</h4>
-              <p>Extra guidance on routes, volunteer briefings, safety, timings and running a smooth pick.</p>
+
+            <p class="mosque-carousel-form__error" data-mosque-error aria-live="polite"></p>
+            <div class="mosque-carousel-form__actions">
+              <button class="button button--secondary is-hidden" type="button" data-mosque-back hidden style="display: none;">Back</button>
+              <button class="button button--primary hero-cta" type="button" data-mosque-next>Next</button>
+              <button class="button button--primary hero-cta is-hidden" type="submit" data-mosque-submit hidden style="display: none;">Submit</button>
             </div>
-            <div>
-              <h4>Free starter pack</h4>
-              <p>Eligible mosques can receive litter pickers and gloves, plus guidance on requesting extra equipment.</p>
+
+            <div class="mosque-carousel-form__success" data-mosque-success role="status" aria-live="polite" tabindex="-1" hidden>
+              <strong>Thank you.</strong>
+              <p>Your request has been sent. A member of the PureStreets team will be in touch soon.</p>
+              <a class="button button--primary hero-cta mosque-carousel-form__guide" href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Open the community handbook</a>
             </div>
-            <div>
-              <h4>Promotion support</h4>
-              <p>Help sharing your clean-up through social media and WhatsApp so your community knows how to join.</p>
-            </div>
-            <div>
-              <h4>Media and design support</h4>
-              <p>Support with posters, social media graphics and simple video editing to help your event feel polished.</p>
-            </div>
-          </div>
+          </form>
         </article>
       </div>
     </section>
@@ -155,6 +214,6 @@
     </nav>
     <p class="footer-trademark">PureStreets<sup>TM</sup> 2026</p>
   </footer>
-  <script src="script.js"></script>
+  <script src="script.js?v=mosque-form-8"></script>
 </body>
 </html>

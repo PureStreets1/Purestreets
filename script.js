@@ -125,7 +125,11 @@ if ('IntersectionObserver' in window) {
   const impactSection = document.querySelector('#impact');
   if (impactSection) counterObserver.observe(impactSection);
 
-  if (revealItems.length) {
+  const shouldRevealImmediately = window.matchMedia('(max-width: 560px)').matches;
+
+  if (revealItems.length && shouldRevealImmediately) {
+    revealItems.forEach((item) => item.classList.add('is-visible'));
+  } else if (revealItems.length) {
     const revealObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
@@ -503,9 +507,618 @@ function initVolunteerTracker() {
 
   renderBoard();
 }
+
+function initMosqueCarouselForm() {
+  const form = document.querySelector('[data-mosque-form]');
+  if (!form) return;
+
+  const slides = [...form.querySelectorAll('[data-mosque-slide]')];
+  const track = form.querySelector('[data-mosque-track]');
+  const stepLabel = form.querySelector('[data-mosque-step-label]');
+  const progress = form.querySelector('[data-mosque-progress]');
+  const error = form.querySelector('[data-mosque-error]');
+  const backButton = form.querySelector('[data-mosque-back]');
+  const nextButton = form.querySelector('[data-mosque-next]');
+  const submitButton = form.querySelector('[data-mosque-submit]');
+  const success = form.querySelector('[data-mosque-success]');
+  const optionInputs = [...form.querySelectorAll('input[name="Support requested"]')];
+  const frequencyInputs = [...form.querySelectorAll('input[name="Pick frequency"]')];
+  const allSupportInput = form.querySelector('[data-all-support]');
+  const mosqueNameInput = form.querySelector('[data-mosque-name-input]');
+  const mosqueNameList = form.querySelector('[data-mosque-name-list]');
+  const mosqueAddressInput = form.querySelector('[data-mosque-address-input]');
+  const mosqueAddressPanel = form.querySelector('[data-mosque-address-panel]');
+  const mosqueAddressMessage = form.querySelector('[data-mosque-address-message]');
+  const mosqueAddressSelectWrap = form.querySelector('[data-mosque-address-select-wrap]');
+  const mosqueAddressSelect = form.querySelector('[data-mosque-address-select]');
+
+  let currentStep = 0;
+  let submitPending = false;
+  let successTimer;
+  let mosqueNamesLoaded = false;
+  let mosqueNamesLoading = false;
+  let mosqueNamesLoadPromise = null;
+  let mosqueDirectory = new Map();
+  let mosqueEntries = [];
+  let selectedMosqueEntry = null;
+
+  function setError(message = '') {
+    error.textContent = message;
+  }
+
+  function markOptions() {
+    [...optionInputs, ...frequencyInputs].forEach((input) => {
+      input.closest('.mosque-option-card')?.classList.toggle('is-selected', input.checked);
+    });
+  }
+
+  function normaliseMosqueName(name) {
+    return String(name || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ');
+  }
+
+  function compactMosqueSearchText(value) {
+    return normaliseMosqueName(value).replace(/\s+/g, '');
+  }
+
+  function setMosqueSuggestionsOpen(isOpen) {
+    if (!mosqueNameInput || !mosqueNameList) return;
+    mosqueNameInput.setAttribute('aria-expanded', String(isOpen));
+    mosqueNameList.hidden = !isOpen;
+  }
+
+  function hideMosqueSuggestions() {
+    setMosqueSuggestionsOpen(false);
+    mosqueNameList?.replaceChildren();
+    updateCarouselHeight();
+  }
+
+  function updateCarouselHeight() {
+    const activeSlide = slides[currentStep];
+    if (!activeSlide) return;
+
+    window.requestAnimationFrame(() => {
+      form.style.setProperty('--mosque-form-active-height', `${activeSlide.scrollHeight}px`);
+    });
+  }
+
+  function setCarouselButtonVisible(button, isVisible) {
+    if (!button) return;
+
+    button.hidden = !isVisible;
+    button.classList.toggle('is-hidden', !isVisible);
+    button.style.display = isVisible ? '' : 'none';
+  }
+
+  function parseCsvRows(csv) {
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let inQuotes = false;
+
+    for (let index = 0; index < csv.length; index += 1) {
+      const char = csv[index];
+      const nextChar = csv[index + 1];
+
+      if (inQuotes) {
+        if (char === '"' && nextChar === '"') {
+          cell += '"';
+          index += 1;
+        } else if (char === '"') {
+          inQuotes = false;
+        } else {
+          cell += char;
+        }
+        continue;
+      }
+
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === ',') {
+        row.push(cell);
+        cell = '';
+      } else if (char === '\n') {
+        row.push(cell);
+        rows.push(row);
+        row = [];
+        cell = '';
+      } else if (char !== '\r') {
+        cell += char;
+      }
+    }
+
+    if (cell || row.length) {
+      row.push(cell);
+      rows.push(row);
+    }
+
+    return rows;
+  }
+
+  async function loadMosqueNameSuggestions() {
+    if (!mosqueNameInput || mosqueNamesLoaded) return true;
+    if (mosqueNamesLoading && mosqueNamesLoadPromise) return mosqueNamesLoadPromise;
+
+    const csvPath = mosqueNameInput.dataset.mosqueCsv;
+    if (!csvPath) return false;
+
+    mosqueNamesLoading = true;
+
+    mosqueNamesLoadPromise = (async () => {
+      const response = await fetch(csvPath);
+      if (!response.ok) {
+        throw new Error(`CSV request failed with ${response.status}`);
+      }
+
+      const rows = parseCsvRows(await response.text());
+      const directory = new Map();
+      const entries = [];
+
+      rows.forEach((row) => {
+        const name = String(row[16] || '').trim();
+        if (!name) return;
+
+        const key = normaliseMosqueName(name);
+        const address = String(row[21] || '').trim();
+        const entry = directory.get(key) || { name, addresses: new Set() };
+
+        if (address) entry.addresses.add(address);
+        directory.set(key, entry);
+        entries.push({
+          name,
+          address,
+          key,
+          searchText: normaliseMosqueName(`${name} ${address}`),
+          compactSearchText: compactMosqueSearchText(`${name} ${address}`)
+        });
+      });
+
+      mosqueDirectory = directory;
+      mosqueEntries = entries.sort((a, b) => a.name.localeCompare(b.name) || a.address.localeCompare(b.address));
+      mosqueNamesLoaded = true;
+      return true;
+    })();
+
+    try {
+      return await mosqueNamesLoadPromise;
+    } catch (error) {
+      console.error('Mosque name suggestions failed to load:', error);
+      return false;
+    } finally {
+      mosqueNamesLoading = false;
+      mosqueNamesLoadPromise = null;
+    }
+  }
+
+  function setSelectedMosqueAddress(address = '') {
+    if (mosqueAddressInput) mosqueAddressInput.value = address;
+  }
+
+  function showSingleMosqueAddress(address) {
+    if (!address || !mosqueAddressPanel) return;
+
+    mosqueAddressPanel.hidden = false;
+    if (mosqueAddressMessage) mosqueAddressMessage.textContent = `Address: ${address}`;
+    if (mosqueAddressSelectWrap) mosqueAddressSelectWrap.hidden = true;
+    if (mosqueAddressSelect) {
+      mosqueAddressSelect.required = false;
+      mosqueAddressSelect.removeAttribute('aria-invalid');
+      mosqueAddressSelect.value = '';
+    }
+    setSelectedMosqueAddress(address);
+    updateCarouselHeight();
+  }
+
+  function clearMosqueAddressMatch() {
+    setSelectedMosqueAddress();
+    if (mosqueAddressPanel) mosqueAddressPanel.hidden = true;
+    if (mosqueAddressMessage) mosqueAddressMessage.textContent = '';
+    if (mosqueAddressSelectWrap) mosqueAddressSelectWrap.hidden = true;
+    if (mosqueAddressSelect) {
+      mosqueAddressSelect.required = false;
+      mosqueAddressSelect.removeAttribute('aria-invalid');
+      mosqueAddressSelect.value = '';
+    }
+    updateCarouselHeight();
+  }
+
+  function renderAddressChoices(addresses) {
+    if (!mosqueAddressSelect) return;
+
+    const currentValue = mosqueAddressSelect.value;
+    const fragment = document.createDocumentFragment();
+    const placeholder = document.createElement('option');
+
+    placeholder.value = '';
+    placeholder.textContent = 'Select an address';
+    fragment.append(placeholder);
+
+    addresses.forEach((address) => {
+      const option = document.createElement('option');
+      option.value = address;
+      option.textContent = address;
+      fragment.append(option);
+    });
+
+    mosqueAddressSelect.replaceChildren(fragment);
+
+    if (addresses.includes(currentValue)) {
+      mosqueAddressSelect.value = currentValue;
+      setSelectedMosqueAddress(currentValue);
+    } else {
+      mosqueAddressSelect.value = '';
+      setSelectedMosqueAddress();
+    }
+  }
+
+  function syncMosqueAddressMatch() {
+    if (!mosqueNameInput || !mosqueAddressPanel) return;
+
+    if (selectedMosqueEntry && normaliseMosqueName(mosqueNameInput.value) === selectedMosqueEntry.key) {
+      if (selectedMosqueEntry.address) {
+        showSingleMosqueAddress(selectedMosqueEntry.address);
+      } else {
+        clearMosqueAddressMatch();
+      }
+      return;
+    }
+
+    const entry = mosqueDirectory.get(normaliseMosqueName(mosqueNameInput.value));
+    if (!entry) {
+      clearMosqueAddressMatch();
+      return;
+    }
+
+    const addresses = [...entry.addresses].sort((a, b) => a.localeCompare(b));
+    if (!addresses.length) {
+      clearMosqueAddressMatch();
+      return;
+    }
+
+    mosqueAddressPanel.hidden = false;
+    mosqueAddressSelect?.removeAttribute('aria-invalid');
+
+    if (addresses.length === 1) {
+      showSingleMosqueAddress(addresses[0]);
+      return;
+    }
+
+    if (mosqueAddressMessage) {
+      mosqueAddressMessage.textContent = 'We found more than one mosque with this name. Please choose the correct address.';
+    }
+
+    if (mosqueAddressSelectWrap) mosqueAddressSelectWrap.hidden = false;
+    if (mosqueAddressSelect) mosqueAddressSelect.required = true;
+    renderAddressChoices(addresses);
+    updateCarouselHeight();
+  }
+
+  function chooseMosqueSuggestion(entry) {
+    if (!mosqueNameInput) return;
+
+    selectedMosqueEntry = entry;
+    mosqueNameInput.value = entry.name;
+    hideMosqueSuggestions();
+
+    if (entry.address) {
+      showSingleMosqueAddress(entry.address);
+    } else {
+      clearMosqueAddressMatch();
+    }
+
+    setError();
+  }
+
+  function renderMosqueSuggestions() {
+    if (!mosqueNameInput || !mosqueNameList || !mosqueNamesLoaded) return;
+
+    const query = normaliseMosqueName(mosqueNameInput.value);
+    const compactQuery = compactMosqueSearchText(mosqueNameInput.value);
+    if (compactQuery.length < 2) {
+      hideMosqueSuggestions();
+      return;
+    }
+
+    const matches = mosqueEntries
+      .filter((entry) => entry.searchText.includes(query) || entry.compactSearchText.includes(compactQuery))
+      .sort((a, b) => {
+        const aStarts = a.searchText.startsWith(query) || a.compactSearchText.startsWith(compactQuery);
+        const bStarts = b.searchText.startsWith(query) || b.compactSearchText.startsWith(compactQuery);
+        return Number(bStarts) - Number(aStarts) || a.name.localeCompare(b.name) || a.address.localeCompare(b.address);
+      })
+      .slice(0, 8);
+
+    if (!matches.length) {
+      hideMosqueSuggestions();
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    matches.forEach((entry) => {
+      const button = document.createElement('button');
+      const name = document.createElement('span');
+      const address = document.createElement('small');
+
+      button.type = 'button';
+      button.className = 'mosque-name-suggestions__item';
+      button.setAttribute('role', 'option');
+      button.addEventListener('click', () => chooseMosqueSuggestion(entry));
+
+      name.textContent = entry.name;
+      address.textContent = entry.address || 'Address not listed';
+      button.append(name, address);
+      fragment.append(button);
+    });
+
+    mosqueNameList.replaceChildren(fragment);
+    setMosqueSuggestionsOpen(true);
+    updateCarouselHeight();
+  }
+
+  function setStep(index) {
+    currentStep = Math.max(0, Math.min(index, slides.length - 1));
+    form.style.setProperty('--mosque-form-offset', `-${currentStep * 100}%`);
+    form.style.setProperty('--mosque-form-progress', `${((currentStep + 1) / slides.length) * 100}%`);
+    if (stepLabel) stepLabel.textContent = `Step ${currentStep + 1} of ${slides.length}`;
+
+    slides.forEach((slide, slideIndex) => {
+      slide.toggleAttribute('inert', slideIndex !== currentStep);
+      slide.setAttribute('aria-hidden', String(slideIndex !== currentStep));
+    });
+
+    setCarouselButtonVisible(backButton, currentStep > 0);
+    setCarouselButtonVisible(nextButton, currentStep < slides.length - 1);
+    setCarouselButtonVisible(submitButton, currentStep === slides.length - 1);
+    setError();
+    updateCarouselHeight();
+  }
+
+  function currentInput() {
+    return slides[currentStep]?.querySelector('input[required]');
+  }
+
+  function validateStep() {
+    setError();
+    form.querySelectorAll('[aria-invalid="true"]').forEach((input) => input.removeAttribute('aria-invalid'));
+
+    if (currentStep === 1) {
+      const hasSelection = optionInputs.some((input) => input.checked);
+      if (!hasSelection) {
+        setError('Please choose at least one option.');
+        optionInputs[0]?.focus();
+      }
+      return hasSelection;
+    }
+
+    if (currentStep === 2) {
+      const hasFrequency = frequencyInputs.some((input) => input.checked);
+      if (!hasFrequency) {
+        setError('Please choose how often your mosque would like to do litter picks.');
+        frequencyInputs[0]?.focus();
+      }
+      return hasFrequency;
+    }
+
+    const input = currentInput();
+    if (!input) return true;
+
+    const value = input.value.trim();
+    const isPhone = input.type === 'tel';
+    const phoneIsValid = /^[+()0-9\s-]{7,20}$/.test(value);
+    const isValid = value.length > 0 && (!isPhone || phoneIsValid);
+
+    if (!isValid) {
+      input.setAttribute('aria-invalid', 'true');
+      setError(isPhone ? 'Please enter a valid phone number.' : 'Please complete this field.');
+      input.focus();
+    }
+
+    if (!isValid) return false;
+
+    if (input === mosqueNameInput && mosqueAddressSelect && mosqueAddressSelect.required && !mosqueAddressInput?.value.trim()) {
+      mosqueAddressSelect.setAttribute('aria-invalid', 'true');
+      setError('Please choose the correct mosque address.');
+      mosqueAddressSelect.focus();
+      return false;
+    }
+
+    return true;
+  }
+
+  function showSuccess() {
+    if (!submitPending) return;
+    submitPending = false;
+    window.clearTimeout(successTimer);
+    form.classList.add('is-complete');
+    success.hidden = false;
+    success.focus?.();
+  }
+
+  function buildMosquePayload() {
+    const data = new FormData(form);
+    const supportRequested = data.getAll('Support requested').map((item) => String(item).trim()).filter(Boolean);
+
+    return {
+      mosqueName: String(data.get('Mosque name') || '').trim(),
+      mosqueAddress: String(data.get('Mosque address') || '').trim(),
+      supportRequested,
+      contactName: String(data.get('Contact name') || '').trim(),
+      phoneNumber: String(data.get('Phone number') || '').trim(),
+      pickFrequency: String(data.get('Pick frequency') || '').trim(),
+      additionalDetails: String(data.get('Additional details') || '').trim(),
+      submittedFrom: 'Mosque page'
+    };
+  }
+
+  function buildEmailFallbackData(payload) {
+    const message = [
+      'New Mosque Enquiry',
+      '',
+      `Mosque: ${payload.mosqueName}`,
+      `Address: ${payload.mosqueAddress || 'Not selected'}`,
+      `Support requested: ${payload.supportRequested.join(', ')}`,
+      `Contact name: ${payload.contactName || 'Not provided'}`,
+      `Mobile: ${payload.phoneNumber || 'Not provided'}`,
+      `Long-term pick frequency: ${payload.pickFrequency || 'Not provided'}`,
+      `Additional details: ${payload.additionalDetails || 'None provided'}`,
+      '',
+      'Submitted from: Mosque page'
+    ].join('\n');
+
+    const fallbackData = new FormData();
+    fallbackData.append('_subject', 'New mosque support pack request');
+    fallbackData.append('_template', 'table');
+    fallbackData.append('_captcha', 'false');
+    fallbackData.append('message', message);
+    return fallbackData;
+  }
+
+  async function sendEmailFallback(payload) {
+    const fallbackEndpoint = form.dataset.emailFallback;
+    if (!fallbackEndpoint) return;
+
+    try {
+      const response = await fetch(fallbackEndpoint, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: buildEmailFallbackData(payload)
+      });
+
+      if (!response.ok) {
+        console.error('Mosque enquiry email fallback failed:', response.status, await response.text().catch(() => ''));
+      }
+    } catch (error) {
+      console.error('Mosque enquiry email fallback error:', error);
+    }
+  }
+
+  async function submitMosqueEnquiry() {
+    const payload = buildMosquePayload();
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        console.error('Mosque enquiry API failed:', response.status, await response.text().catch(() => ''));
+        await sendEmailFallback(payload);
+      }
+    } catch (error) {
+      console.error('Mosque enquiry API error:', error);
+      await sendEmailFallback(payload);
+    } finally {
+      showSuccess();
+    }
+  }
+
+  optionInputs.forEach((input) => {
+    input.addEventListener('change', () => {
+      if (input === allSupportInput && input.checked) {
+        optionInputs.forEach((option) => {
+          option.checked = true;
+        });
+      }
+
+      if (input !== allSupportInput && !input.checked && allSupportInput) {
+        allSupportInput.checked = false;
+      }
+
+      const standardOptions = optionInputs.filter((option) => option !== allSupportInput);
+      if (standardOptions.length && standardOptions.every((option) => option.checked) && allSupportInput) {
+        allSupportInput.checked = true;
+      }
+
+      markOptions();
+      setError();
+    });
+  });
+
+  frequencyInputs.forEach((input) => {
+    input.addEventListener('change', () => {
+      markOptions();
+      setError();
+    });
+  });
+
+  mosqueNameInput?.addEventListener('focus', () => {
+    loadMosqueNameSuggestions().then(() => {
+      renderMosqueSuggestions();
+      syncMosqueAddressMatch();
+    });
+  });
+
+  mosqueNameInput?.addEventListener('input', () => {
+    selectedMosqueEntry = null;
+    setSelectedMosqueAddress();
+    loadMosqueNameSuggestions().then(() => {
+      renderMosqueSuggestions();
+      syncMosqueAddressMatch();
+    });
+  });
+
+  mosqueNameInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      hideMosqueSuggestions();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!mosqueNameInput?.contains(event.target) && !mosqueNameList?.contains(event.target)) {
+      hideMosqueSuggestions();
+    }
+  });
+
+  mosqueAddressSelect?.addEventListener('change', () => {
+    setSelectedMosqueAddress(mosqueAddressSelect.value);
+    mosqueAddressSelect.removeAttribute('aria-invalid');
+    setError();
+  });
+
+  nextButton.addEventListener('click', () => {
+    if (!validateStep()) return;
+    setStep(currentStep + 1);
+  });
+
+  backButton.addEventListener('click', () => {
+    setStep(currentStep - 1);
+  });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    if (currentStep !== slides.length - 1) {
+      if (validateStep()) setStep(currentStep + 1);
+      return;
+    }
+
+    if (!validateStep()) {
+      return;
+    }
+
+    submitPending = true;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Sending...';
+    successTimer = window.setTimeout(showSuccess, 3000);
+    submitMosqueEnquiry();
+  });
+
+  markOptions();
+  setStep(0);
+}
 initRippleEffect();
 initPureBot();
 initVolunteerTracker();
+initMosqueCarouselForm();
 setHeaderState();
 window.addEventListener('scroll', setHeaderState, { passive: true });
 window.addEventListener('resize', setHeaderState);

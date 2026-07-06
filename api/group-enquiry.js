@@ -31,7 +31,7 @@ function cleanText(value) {
   return String(value || '').trim();
 }
 
-function normaliseSupport(value) {
+function normaliseList(value) {
   if (Array.isArray(value)) {
     return value.map(cleanText).filter(Boolean);
   }
@@ -41,100 +41,77 @@ function normaliseSupport(value) {
 }
 
 function validatePayload(payload) {
-  const mosqueName = cleanText(payload.mosqueName);
-  const mosqueAddress = cleanText(payload.mosqueAddress);
+  const groupType = cleanText(payload.groupType);
+  const organisationName = cleanText(payload.organisationName);
+  const location = cleanText(payload.location);
   const contactName = cleanText(payload.contactName);
   const phoneNumber = cleanText(payload.phoneNumber);
   const pickFrequency = cleanText(payload.pickFrequency);
   const additionalDetails = cleanText(payload.additionalDetails);
-  const supportRequested = normaliseSupport(payload.supportRequested);
-  const missingRequiredField = !mosqueName || !supportRequested.length || !pickFrequency || !contactName || !phoneNumber;
+  const supportRequested = normaliseList(payload.supportRequested);
+  const primaryName = organisationName || location;
   const phoneIsValid = /^[+()0-9\s-]{7,20}$/.test(phoneNumber);
+  const missingRequiredField = !groupType || !primaryName || !supportRequested.length || !pickFrequency || !contactName || !phoneNumber;
 
   return {
     isValid: Boolean(!missingRequiredField && phoneIsValid),
-    data: { mosqueName, mosqueAddress, contactName, phoneNumber, pickFrequency, additionalDetails, supportRequested },
+    data: {
+      groupType,
+      organisationName,
+      location,
+      contactName,
+      phoneNumber,
+      pickFrequency,
+      additionalDetails,
+      supportRequested,
+      submittedFrom: cleanText(payload.submittedFrom) || `${groupType} page`
+    },
     error: missingRequiredField ? 'Missing required fields.' : 'Invalid phone number.'
   };
 }
 
 function buildMessage(data) {
   return [
-    '\u{1F54C} New Mosque Enquiry',
+    `New ${data.groupType} Enquiry`,
     '',
-    `Mosque: ${data.mosqueName}`,
-    `Address: ${data.mosqueAddress || 'Not selected'}`,
+    `Type: ${data.groupType}`,
+    `Organisation/name: ${data.organisationName || 'Not provided'}`,
+    `Location: ${data.location || 'Not provided'}`,
     `Support requested: ${data.supportRequested.join(', ')}`,
+    `Frequency/timeline: ${data.pickFrequency || 'Not provided'}`,
+    `Additional details: ${data.additionalDetails || 'None provided'}`,
     `Contact name: ${data.contactName || 'Not provided'}`,
     `Mobile: ${data.phoneNumber || 'Not provided'}`,
-    `Long-term pick frequency: ${data.pickFrequency || 'Not provided'}`,
-    `Additional details: ${data.additionalDetails || 'None provided'}`,
     '',
-    'Submitted from: Mosque page'
+    `Submitted from: ${data.submittedFrom}`
   ].join('\n');
-}
-
-function getSlackWebhookDiagnostics(webhookUrl) {
-  if (!webhookUrl) {
-    return { exists: false };
-  }
-
-  try {
-    const parsedUrl = new URL(webhookUrl);
-    return {
-      exists: true,
-      host: parsedUrl.host,
-      pathnameSegments: parsedUrl.pathname.split('/').filter(Boolean).length,
-      length: webhookUrl.length
-    };
-  } catch (error) {
-    return {
-      exists: true,
-      invalidUrl: true,
-      length: webhookUrl.length
-    };
-  }
 }
 
 async function sendSlackNotification(text) {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-  const diagnostics = getSlackWebhookDiagnostics(webhookUrl);
-
-  console.log('Mosque enquiry Slack env check:', diagnostics);
 
   if (!webhookUrl) {
-    console.error('Mosque enquiry Slack notification skipped: SLACK_WEBHOOK_URL is not set.');
+    console.error('Group enquiry Slack notification skipped: SLACK_WEBHOOK_URL is not set.');
     return { ok: false, skipped: true };
   }
-
-  const payload = { text };
-  console.log('Mosque enquiry Slack fetch called:', {
-    method: 'POST',
-    contentType: 'application/json',
-    payloadHasText: typeof payload.text === 'string' && payload.text.length > 0
-  });
 
   const response = await fetch(webhookUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ text })
   });
-
-  const responseBody = await response.text().catch((error) => `Unable to read Slack response body: ${error?.message || error}`);
-
-  console.log('Mosque enquiry Slack response status:', response.status);
-  console.log('Mosque enquiry Slack response body:', responseBody);
+  const body = await response.text().catch(() => '');
 
   if (!response.ok) {
-    throw new Error(`Slack webhook failed with ${response.status}: ${responseBody}`);
+    throw new Error(`Slack webhook failed with ${response.status}: ${body}`);
   }
 
-  return { ok: true, status: response.status, body: responseBody };
+  return { ok: true, status: response.status };
 }
 
-async function sendEmailNotification(text) {
+async function sendEmailNotification(text, groupType) {
   const params = new URLSearchParams({
-    _subject: 'New mosque support pack request',
+    _subject: `New ${groupType} enquiry`,
     _template: 'table',
     _captcha: 'false',
     message: text
@@ -157,7 +134,7 @@ async function sendEmailNotification(text) {
   return { ok: true };
 }
 
-module.exports = async function mosqueEnquiry(req, res) {
+module.exports = async function groupEnquiry(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return sendJson(res, 405, { ok: false, error: 'Method not allowed.' });
@@ -168,47 +145,35 @@ module.exports = async function mosqueEnquiry(req, res) {
     const { isValid, data, error } = validatePayload(payload);
 
     if (!isValid) {
-      console.error('Mosque enquiry validation failed:', error);
+      console.error('Group enquiry validation failed:', error);
       return sendJson(res, 400, { ok: false, error });
     }
 
     const message = buildMessage(data);
     const [slackResult, emailResult] = await Promise.allSettled([
       sendSlackNotification(message),
-      sendEmailNotification(message)
+      sendEmailNotification(message, data.groupType)
     ]);
 
     if (slackResult.status === 'rejected') {
-      console.error('Mosque enquiry Slack notification failed:', slackResult.reason);
+      console.error('Group enquiry Slack notification failed:', slackResult.reason);
     } else {
-      console.log('Mosque enquiry Slack notification result:', slackResult.value);
+      console.log('Group enquiry Slack notification result:', slackResult.value);
     }
 
     if (emailResult.status === 'rejected') {
-      console.error('Mosque enquiry email notification failed:', emailResult.reason);
+      console.error('Group enquiry email notification failed:', emailResult.reason);
     } else {
-      console.log('Mosque enquiry email notification sent.');
-    }
-
-    const slackOk = slackResult.status === 'fulfilled' && slackResult.value?.ok === true;
-    const emailOk = emailResult.status === 'fulfilled';
-
-    if (!emailOk) {
-      return sendJson(res, 502, {
-        ok: false,
-        error: 'Email notification failed.',
-        slackOk,
-        emailOk
-      });
+      console.log('Group enquiry email notification sent.');
     }
 
     return sendJson(res, 200, {
       ok: true,
-      slackOk,
-      emailOk
+      slackOk: slackResult.status === 'fulfilled' && slackResult.value?.ok === true,
+      emailOk: emailResult.status === 'fulfilled'
     });
   } catch (error) {
-    console.error('Mosque enquiry API error:', error);
-    return sendJson(res, 500, { ok: false, error: 'Unable to process mosque enquiry.' });
+    console.error('Group enquiry API error:', error);
+    return sendJson(res, 500, { ok: false, error: 'Unable to process group enquiry.' });
   }
 };

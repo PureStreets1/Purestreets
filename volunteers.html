@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
   <link rel="apple-touch-icon" href="assets/img/favicon.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=group-pages-1" />
 </head>
 <body class="subpage group-page">
   <header class="site-header is-scrolled" data-header>
@@ -33,36 +33,136 @@
   <main>
     <section class="group-hero group-hero--volunteers" aria-labelledby="group-title">
       <div class="group-hero__content">
-        <img class="group-hero__icon" src="assets/img/volunteer.png" alt="" aria-hidden="true" />
-        <h1 id="group-title">Volunteers</h1>
-        <p>Join a local clean-up, support your community and turn a small act of service into visible care for the streets around you.</p>
+        <h1 id="group-title">Join a Local Litter Pick</h1>
+        <p>Find simple ways to serve your community, meet other volunteers and help keep local streets cleaner.</p>
         <div class="hero__actions">
-          <a class="button button--primary" href="get-involved.html#volunteer-network">Find volunteer options</a>
-          <a class="button button--secondary" href="contact.html">Ask a question</a>
+          <a class="button button--primary hero-cta" href="#volunteer-support-steps">Register Interest</a>
         </div>
       </div>
     </section>
 
-    <section class="group-next" aria-labelledby="next-title">
+    <section class="mosque-help-summary" aria-labelledby="volunteer-help-title">
       <div class="section-kicker">
-        <h2 id="next-title">How volunteers can get involved</h2>
-        <p>Keep this page focused on simple participation. Add event listings or a volunteer sign-up form here.</p>
+        <h2 id="volunteer-help-title">How we help volunteers</h2>
+        <p>We make it easier to find your place in a clean-up, arrive prepared and make your time count.</p>
       </div>
-      <div class="group-next__grid">
-        <article>
-          <span>1</span>
-          <h3>Join a local pick</h3>
-          <p>Find a nearby session and arrive ready to help with the route, bags and clean-up team.</p>
+      <div class="mosque-help-summary__grid" aria-label="PureStreets volunteer support">
+        <article class="mosque-help-card">
+          <img src="assets/img/litterpack.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Local pick opportunities</h3>
         </article>
-        <article>
-          <span>2</span>
-          <h3>Bring others</h3>
-          <p>Invite friends, family or neighbours so the work feels easy, social and repeatable.</p>
+        <article class="mosque-help-card">
+          <img src="assets/img/onlineconsultation.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Simple volunteer guidance</h3>
         </article>
-        <article>
-          <span>3</span>
-          <h3>Share your availability</h3>
-          <p class="is-placeholder">Add the volunteer interest form here.</p>
+        <article class="mosque-help-card">
+          <img src="assets/img/handbookicon.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Safety and route basics</h3>
+        </article>
+        <article class="mosque-help-card">
+          <img src="assets/img/promo.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Community updates</h3>
+        </article>
+        <article class="mosque-help-card">
+          <img src="assets/img/media.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Impact sharing</h3>
+        </article>
+      </div>
+    </section>
+
+    <section id="volunteer-support-steps" class="group-next mosque-process mosque-process--patterned" aria-label="Volunteer interest form">
+      <div class="mosque-process__steps">
+        <article class="mosque-process__card mosque-process__card--form">
+          <div class="mosque-process__copy">
+            <p>Tell us a little about how you would like to volunteer.</p>
+          </div>
+          <form class="mosque-carousel-form" action="/api/group-enquiry" method="POST" data-group-form data-group-type="Volunteer" novalidate>
+            <input type="hidden" name="Group type" value="Volunteer" />
+            <div class="mosque-carousel-form__top">
+              <p data-group-step-label>Step 1 of 6</p>
+              <div class="mosque-carousel-form__progress" aria-hidden="true">
+                <span data-group-progress></span>
+              </div>
+            </div>
+
+            <div class="mosque-carousel-form__viewport">
+              <div class="mosque-carousel-form__track" data-group-track>
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="volunteer-form-step-1">
+                  <label class="mosque-carousel-form__field">
+                    <span id="volunteer-form-step-1">Where are you based?</span>
+                    <small>Town, city or postcode area is enough.</small>
+                    <input type="text" name="Location" autocomplete="address-level2" required />
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="volunteer-form-step-2">
+                  <fieldset class="mosque-carousel-form__fieldset" data-required-group>
+                    <legend id="volunteer-form-step-2">How would you like to get involved?</legend>
+                    <label class="mosque-option-card">
+                      <input type="checkbox" name="Support requested" value="Join local litter picks" />
+                      <span>Join local litter picks</span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="checkbox" name="Support requested" value="Help organise a small group" />
+                      <span>Help organise a small group</span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="checkbox" name="Support requested" value="Bring friends or family" />
+                      <span>Bring friends or family</span>
+                    </label>
+                    <label class="mosque-option-card">
+                      <input type="checkbox" name="Support requested" value="Be contacted about future events" />
+                      <span>Be contacted about future events</span>
+                    </label>
+                  </fieldset>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="volunteer-form-step-3">
+                  <fieldset class="mosque-carousel-form__fieldset" data-required-group>
+                    <legend id="volunteer-form-step-3">How often would you like to volunteer?</legend>
+                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Weekly" required /><span>Weekly</span></label>
+                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Fortnightly" /><span>Fortnightly</span></label>
+                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Monthly" /><span>Monthly</span></label>
+                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="A few times a year" /><span>A few times a year</span></label>
+                  </fieldset>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="volunteer-form-step-4">
+                  <label class="mosque-carousel-form__field">
+                    <span id="volunteer-form-step-4">Anything else you would like us to know?</span>
+                    <textarea name="Additional details" rows="5"></textarea>
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="volunteer-form-step-5">
+                  <label class="mosque-carousel-form__field">
+                    <span id="volunteer-form-step-5">What is your name?</span>
+                    <input type="text" name="Contact name" autocomplete="name" required />
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="volunteer-form-step-6">
+                  <label class="mosque-carousel-form__field">
+                    <span id="volunteer-form-step-6">What is your mobile number?</span>
+                    <input type="tel" name="Phone number" autocomplete="tel" inputmode="tel" required pattern="^[+()0-9\s-]{7,20}$" />
+                  </label>
+                </section>
+              </div>
+            </div>
+
+            <p class="mosque-carousel-form__error" data-group-error aria-live="polite"></p>
+            <div class="mosque-carousel-form__actions">
+              <button class="button button--secondary is-hidden" type="button" data-group-back hidden style="display: none;">Back</button>
+              <button class="button button--primary hero-cta" type="button" data-group-next>Next</button>
+              <button class="button button--primary hero-cta is-hidden" type="submit" data-group-submit hidden style="display: none;">Submit</button>
+            </div>
+
+            <div class="mosque-carousel-form__success" data-group-success role="status" aria-live="polite" tabindex="-1" hidden>
+              <strong>Thank you.</strong>
+              <p>Your interest has been sent. A member of the PureStreets team will be in touch soon.</p>
+              <a class="button button--primary hero-cta mosque-carousel-form__guide" href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Open the community handbook</a>
+            </div>
+          </form>
         </article>
       </div>
     </section>
@@ -80,11 +180,11 @@
     <nav class="footer-column" aria-label="PureStreets links">
       <h2>Explore</h2>
       <a href="index.html#about">About</a>
-      <a href="assets/docs/community-litter-pick-guide.pdf" target="_blank" rel="noreferrer">Starter Handbook</a>
+      <a href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Starter Handbook</a>
       <a href="contact.html">Contact</a>
     </nav>
     <p class="footer-trademark">PureStreets<sup>TM</sup> 2026</p>
   </footer>
-  <script src="script.js"></script>
+  <script src="script.js?v=group-pages-1"></script>
 </body>
 </html>

@@ -2127,7 +2127,10 @@ h3 {
   line-height: 0.94;
 }
 
-.group-hero--mosques h1 {
+.group-hero--mosques h1,
+.group-hero--volunteers h1,
+.group-hero--isocs h1,
+.group-hero--organisation h1 {
   font-size: clamp(2rem, 4.1vw, 4.2rem);
   line-height: 1.02;
 }
@@ -3085,7 +3088,10 @@ h3 {
     font-size: clamp(2.15rem, 12vw, 3.55rem);
   }
 
-  .group-hero--mosques h1 {
+  .group-hero--mosques h1,
+  .group-hero--volunteers h1,
+  .group-hero--isocs h1,
+  .group-hero--organisation h1 {
     margin-bottom: 24px;
     font-size: clamp(2.25rem, 13vw, 3.75rem);
     line-height: 1.02;

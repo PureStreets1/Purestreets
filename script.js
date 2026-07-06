@@ -43,7 +43,7 @@ navLinks.forEach((link) => {
   });
 });
 
-const comingSoonPages = new Set(['volunteers.html', 'isocs.html', 'organisation.html']);
+const comingSoonPages = new Set([]);
 const comingSoonLinks = [...document.querySelectorAll('a[href]')].filter((link) => {
   try {
     const url = new URL(link.getAttribute('href'), window.location.href);
@@ -976,31 +976,37 @@ function initMosqueCarouselForm() {
     fallbackData.append('_subject', 'New mosque support pack request');
     fallbackData.append('_template', 'table');
     fallbackData.append('_captcha', 'false');
+    fallbackData.append('_next', `${window.location.origin}${window.location.pathname}?mosque-request=sent#mosque-support-steps`);
     fallbackData.append('message', message);
     return fallbackData;
   }
 
   async function sendEmailFallback(payload) {
     const fallbackEndpoint = form.dataset.emailFallback;
-    if (!fallbackEndpoint) return;
+    if (!fallbackEndpoint) return false;
 
-    try {
-      const response = await fetch(fallbackEndpoint, {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: buildEmailFallbackData(payload)
-      });
+    const directEndpoint = fallbackEndpoint.replace('/ajax/', '/');
+    const fallbackForm = document.createElement('form');
+    fallbackForm.method = 'POST';
+    fallbackForm.action = directEndpoint;
+    fallbackForm.hidden = true;
 
-      if (!response.ok) {
-        console.error('Mosque enquiry email fallback failed:', response.status, await response.text().catch(() => ''));
-      }
-    } catch (error) {
-      console.error('Mosque enquiry email fallback error:', error);
-    }
+    buildEmailFallbackData(payload).forEach((value, key) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      fallbackForm.append(input);
+    });
+
+    document.body.append(fallbackForm);
+    fallbackForm.submit();
+    return true;
   }
 
   async function submitMosqueEnquiry() {
     const payload = buildMosquePayload();
+    let sent = false;
 
     try {
       const response = await fetch(form.action, {
@@ -1011,13 +1017,28 @@ function initMosqueCarouselForm() {
 
       if (!response.ok) {
         console.error('Mosque enquiry API failed:', response.status, await response.text().catch(() => ''));
-        await sendEmailFallback(payload);
+        sent = await sendEmailFallback(payload);
+      } else {
+        const result = await response.json().catch(() => ({ ok: true, emailOk: true }));
+        sent = result.emailOk !== false;
+
+        if (!sent) {
+          sent = await sendEmailFallback(payload);
+        }
       }
     } catch (error) {
       console.error('Mosque enquiry API error:', error);
-      await sendEmailFallback(payload);
+      sent = await sendEmailFallback(payload);
     } finally {
-      showSuccess();
+      if (sent) {
+        showSuccess();
+      } else {
+        submitPending = false;
+        window.clearTimeout(successTimer);
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit';
+        setError('Sorry, we could not send your request. Please email purestreets0@gmail.com directly.');
+      }
     }
   }
 
@@ -1108,17 +1129,198 @@ function initMosqueCarouselForm() {
     submitPending = true;
     submitButton.disabled = true;
     submitButton.textContent = 'Sending...';
-    successTimer = window.setTimeout(showSuccess, 3000);
     submitMosqueEnquiry();
   });
 
   markOptions();
   setStep(0);
 }
+
+function initGroupCarouselForms() {
+  const forms = [...document.querySelectorAll('[data-group-form]')];
+  if (!forms.length) return;
+
+  forms.forEach((form) => {
+    const slides = [...form.querySelectorAll('[data-group-slide]')];
+    const stepLabel = form.querySelector('[data-group-step-label]');
+    const backButton = form.querySelector('[data-group-back]');
+    const nextButton = form.querySelector('[data-group-next]');
+    const submitButton = form.querySelector('[data-group-submit]');
+    const success = form.querySelector('[data-group-success]');
+    const error = form.querySelector('[data-group-error]');
+    const optionInputs = [...form.querySelectorAll('.mosque-option-card input')];
+    let currentStep = 0;
+    let submitPending = false;
+    let successTimer;
+
+    function setError(message = '') {
+      if (error) error.textContent = message;
+    }
+
+    function markOptions() {
+      optionInputs.forEach((input) => {
+        input.closest('.mosque-option-card')?.classList.toggle('is-selected', input.checked);
+      });
+    }
+
+    function setButtonVisible(button, isVisible) {
+      if (!button) return;
+      button.hidden = !isVisible;
+      button.classList.toggle('is-hidden', !isVisible);
+      button.style.display = isVisible ? '' : 'none';
+    }
+
+    function updateHeight() {
+      const activeSlide = slides[currentStep];
+      if (!activeSlide) return;
+      window.requestAnimationFrame(() => {
+        form.style.setProperty('--mosque-form-active-height', `${activeSlide.scrollHeight}px`);
+      });
+    }
+
+    function setStep(index) {
+      currentStep = Math.max(0, Math.min(index, slides.length - 1));
+      form.style.setProperty('--mosque-form-offset', `-${currentStep * 100}%`);
+      form.style.setProperty('--mosque-form-progress', `${((currentStep + 1) / slides.length) * 100}%`);
+      if (stepLabel) stepLabel.textContent = `Step ${currentStep + 1} of ${slides.length}`;
+
+      slides.forEach((slide, slideIndex) => {
+        slide.toggleAttribute('inert', slideIndex !== currentStep);
+        slide.setAttribute('aria-hidden', String(slideIndex !== currentStep));
+      });
+
+      setButtonVisible(backButton, currentStep > 0);
+      setButtonVisible(nextButton, currentStep < slides.length - 1);
+      setButtonVisible(submitButton, currentStep === slides.length - 1);
+      setError();
+      updateHeight();
+    }
+
+    function validateStep() {
+      const slide = slides[currentStep];
+      if (!slide) return true;
+
+      setError();
+      slide.querySelectorAll('[aria-invalid="true"]').forEach((input) => input.removeAttribute('aria-invalid'));
+
+      const requiredGroup = slide.querySelector('[data-required-group]');
+      if (requiredGroup) {
+        const groupInputs = [...requiredGroup.querySelectorAll('input[type="checkbox"], input[type="radio"]')];
+        const hasSelection = groupInputs.some((input) => input.checked);
+        if (!hasSelection) {
+          setError('Please choose at least one option.');
+          groupInputs[0]?.focus();
+        }
+        return hasSelection;
+      }
+
+      const requiredInputs = [...slide.querySelectorAll('input[required], textarea[required], select[required]')];
+      for (const input of requiredInputs) {
+        const value = input.value.trim();
+        const isPhone = input.type === 'tel';
+        const isValid = value.length > 0 && (!isPhone || /^[+()0-9\s-]{7,20}$/.test(value));
+
+        if (!isValid) {
+          input.setAttribute('aria-invalid', 'true');
+          setError(isPhone ? 'Please enter a valid mobile number.' : 'Please complete this field.');
+          input.focus();
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function buildPayload() {
+      const data = new FormData(form);
+      return {
+        groupType: String(data.get('Group type') || form.dataset.groupType || 'General').trim(),
+        organisationName: String(data.get('Organisation name') || '').trim(),
+        location: String(data.get('Location') || '').trim(),
+        supportRequested: data.getAll('Support requested').map((item) => String(item).trim()).filter(Boolean),
+        pickFrequency: String(data.get('Pick frequency') || '').trim(),
+        additionalDetails: String(data.get('Additional details') || '').trim(),
+        contactName: String(data.get('Contact name') || '').trim(),
+        phoneNumber: String(data.get('Phone number') || '').trim(),
+        submittedFrom: `${String(data.get('Group type') || form.dataset.groupType || 'Group').trim()} page`
+      };
+    }
+
+    function showSuccess() {
+      if (!submitPending) return;
+      submitPending = false;
+      window.clearTimeout(successTimer);
+      form.classList.add('is-complete');
+      if (success) {
+        success.hidden = false;
+        success.focus?.();
+      }
+    }
+
+    async function submitGroupEnquiry() {
+      const payload = buildPayload();
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          console.error('Group enquiry API failed:', response.status, await response.text().catch(() => ''));
+        }
+      } catch (error) {
+        console.error('Group enquiry API error:', error);
+      } finally {
+        showSuccess();
+      }
+    }
+
+    optionInputs.forEach((input) => {
+      input.addEventListener('change', () => {
+        markOptions();
+        setError();
+      });
+    });
+
+    nextButton?.addEventListener('click', () => {
+      if (!validateStep()) return;
+      setStep(currentStep + 1);
+    });
+
+    backButton?.addEventListener('click', () => {
+      setStep(currentStep - 1);
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      if (currentStep !== slides.length - 1) {
+        if (validateStep()) setStep(currentStep + 1);
+        return;
+      }
+
+      if (!validateStep()) return;
+
+      submitPending = true;
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sending...';
+      }
+      successTimer = window.setTimeout(showSuccess, 3000);
+      submitGroupEnquiry();
+    });
+
+    markOptions();
+    setStep(0);
+  });
+}
 initRippleEffect();
 initPureBot();
 initVolunteerTracker();
 initMosqueCarouselForm();
+initGroupCarouselForms();
 setHeaderState();
 window.addEventListener('scroll', setHeaderState, { passive: true });
 window.addEventListener('resize', setHeaderState);

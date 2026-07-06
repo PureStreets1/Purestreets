@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
   <link rel="apple-touch-icon" href="assets/img/favicon.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=group-pages-1" />
 </head>
 <body class="subpage group-page">
   <header class="site-header is-scrolled" data-header>
@@ -33,79 +33,125 @@
   <main>
     <section class="group-hero group-hero--organisation" aria-labelledby="group-title">
       <div class="group-hero__content">
-        <img class="group-hero__icon" src="assets/img/organisationicon.png" alt="" aria-hidden="true" />
-        <h1 id="group-title">Organisations</h1>
-        <p>Partner with PureStreets to support cleaner neighbourhoods, practical volunteering and visible Muslim-led community care.</p>
+        <h1 id="group-title">Partner With PureStreets</h1>
+        <p>Support cleaner neighbourhoods through practical volunteering, equipment, campaigns and visible community impact.</p>
         <div class="hero__actions">
-          <a class="button button--primary hero-cta" href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Start a partnership with us</a>
-          <a class="button button--secondary" href="contact.html">Contact the team</a>
+          <a class="button button--primary hero-cta" href="#organisation-support-steps">Start a Partnership</a>
         </div>
       </div>
     </section>
 
-    <section class="group-next mosque-process" aria-labelledby="next-title">
+    <section class="mosque-help-summary" aria-labelledby="organisation-help-title">
       <div class="section-kicker">
-        <h2 id="next-title">How organisation partnerships work</h2>
-        <p>A simple three-step process to shape a partnership that supports cleaner streets and practical volunteering.</p>
+        <h2 id="organisation-help-title">How we help organisations</h2>
+        <p>We shape partnerships that are practical, locally rooted and easy to communicate to your community or stakeholders.</p>
       </div>
+      <div class="mosque-help-summary__grid" aria-label="PureStreets organisation partnership support">
+        <article class="mosque-help-card">
+          <img src="assets/img/litterpack.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Equipment sponsorship</h3>
+        </article>
+        <article class="mosque-help-card">
+          <img src="assets/img/onlineconsultation.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Partnership planning</h3>
+        </article>
+        <article class="mosque-help-card">
+          <img src="assets/img/promo.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Campaign activation</h3>
+        </article>
+        <article class="mosque-help-card">
+          <img src="assets/img/media.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Media support</h3>
+        </article>
+        <article class="mosque-help-card">
+          <img src="assets/img/handbookicon.png" alt="" loading="lazy" aria-hidden="true" />
+          <h3>Impact updates</h3>
+        </article>
+      </div>
+    </section>
+
+    <section id="organisation-support-steps" class="group-next mosque-process mosque-process--patterned" aria-label="Organisation partnership form">
       <div class="mosque-process__steps">
-        <article class="mosque-process__card">
-          <figure class="mosque-process__media">
-            <img src="assets/img/Organisation.jpg" alt="Organisation partnership support for PureStreets" loading="lazy" />
-          </figure>
+        <article class="mosque-process__card mosque-process__card--form">
           <div class="mosque-process__copy">
-            <span class="mosque-process__number">Step 1</span>
-            <h3>Share your partnership interest</h3>
-            <p>Tell us what your organisation would like to support, from equipment to campaigns or community volunteering.</p>
-            <a class="mosque-process__link" href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Open the form</a>
+            <p>Tell us a little about your organisation.</p>
           </div>
-        </article>
-        <article class="mosque-process__card">
-          <figure class="mosque-process__media">
-            <img src="assets/img/IMG_4272.png" alt="PureStreets volunteers discussing a clean-up outdoors" loading="lazy" />
-          </figure>
-          <div class="mosque-process__copy">
-            <span class="mosque-process__number">Step 2</span>
-            <h3>Shape the right collaboration</h3>
-            <p>We will have a conversation about your aims, location, audience and the most useful way to work together.</p>
-          </div>
-        </article>
-        <article class="mosque-process__card mosque-process__card--support">
-          <figure class="mosque-process__media mosque-process__media--wide">
-            <img src="assets/img/IMG_4271.png" alt="PureStreets volunteers taking part in a litter pick" loading="lazy" />
-          </figure>
-          <div class="mosque-process__support-head">
-            <span class="mosque-process__number">Step 3</span>
-            <div>
-              <h3>Receive the partner support package</h3>
-              <p>Once the partnership is agreed, we provide the practical structure and materials to help the collaboration run smoothly.</p>
+          <form class="mosque-carousel-form" action="/api/group-enquiry" method="POST" data-group-form data-group-type="Organisation" novalidate>
+            <input type="hidden" name="Group type" value="Organisation" />
+            <div class="mosque-carousel-form__top">
+              <p data-group-step-label>Step 1 of 6</p>
+              <div class="mosque-carousel-form__progress" aria-hidden="true">
+                <span data-group-progress></span>
+              </div>
             </div>
-          </div>
-          <div class="mosque-support-grid" aria-label="PureStreets organisation support package">
-            <div>
-              <h4>Campaign planning</h4>
-              <p>Support shaping a clean-up, awareness drive or local volunteering day around your goals.</p>
+
+            <div class="mosque-carousel-form__viewport">
+              <div class="mosque-carousel-form__track" data-group-track>
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-1">
+                  <label class="mosque-carousel-form__field">
+                    <span id="organisation-form-step-1">What is your organisation called?</span>
+                    <input type="text" name="Organisation name" autocomplete="organization" required />
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-2">
+                  <fieldset class="mosque-carousel-form__fieldset" data-required-group>
+                    <legend id="organisation-form-step-2">What kind of partnership are you interested in?</legend>
+                    <label class="mosque-option-card"><input type="checkbox" name="Support requested" value="Sponsor equipment" /><span>Support or sponsor equipment</span></label>
+                    <label class="mosque-option-card"><input type="checkbox" name="Support requested" value="Run a campaign" /><span>Run a campaign or volunteering day</span></label>
+                    <label class="mosque-option-card"><input type="checkbox" name="Support requested" value="Support local communities" /><span>Support mosques or local communities</span></label>
+                    <label class="mosque-option-card"><input type="checkbox" name="Support requested" value="Explore partnership options" /><span>Explore partnership options</span></label>
+                  </fieldset>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-3">
+                  <fieldset class="mosque-carousel-form__fieldset" data-required-group>
+                    <legend id="organisation-form-step-3">What sort of partnership timeline are you considering?</legend>
+                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="One-off campaign" required /><span>One-off campaign</span></label>
+                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Seasonal partnership" /><span>Seasonal partnership</span></label>
+                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Ongoing support" /><span>Ongoing support</span></label>
+                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Not sure yet" /><span>Not sure yet</span></label>
+                  </fieldset>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-4">
+                  <label class="mosque-carousel-form__field">
+                    <span id="organisation-form-step-4">Anything else you would like us to know?</span>
+                    <textarea name="Additional details" rows="5"></textarea>
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-5">
+                  <label class="mosque-carousel-form__field">
+                    <span id="organisation-form-step-5">What is your name?</span>
+                    <input type="text" name="Contact name" autocomplete="name" required />
+                  </label>
+                </section>
+
+                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-6">
+                  <label class="mosque-carousel-form__field">
+                    <span id="organisation-form-step-6">What is your mobile number?</span>
+                    <input type="tel" name="Phone number" autocomplete="tel" inputmode="tel" required pattern="^[+()0-9\s-]{7,20}$" />
+                  </label>
+                </section>
+              </div>
             </div>
-            <div>
-              <h4>Equipment support options</h4>
-              <p>Clear ways to help provide litter pickers, gloves, bags and route materials for communities.</p>
+
+            <p class="mosque-carousel-form__error" data-group-error aria-live="polite"></p>
+            <div class="mosque-carousel-form__actions">
+              <button class="button button--secondary is-hidden" type="button" data-group-back hidden style="display: none;">Back</button>
+              <button class="button button--primary hero-cta" type="button" data-group-next>Next</button>
+              <button class="button button--primary hero-cta is-hidden" type="submit" data-group-submit hidden style="display: none;">Submit</button>
             </div>
-            <div>
-              <h4>Community activation</h4>
-              <p>Help connecting your support with mosques, students, volunteers and local groups.</p>
+
+            <div class="mosque-carousel-form__success" data-group-success role="status" aria-live="polite" tabindex="-1" hidden>
+              <strong>Thank you.</strong>
+              <p>Your partnership enquiry has been sent. A member of the PureStreets team will be in touch soon.</p>
+              <a class="button button--primary hero-cta mosque-carousel-form__guide" href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Open the community handbook</a>
             </div>
-            <div>
-              <h4>Media and design support</h4>
-              <p>Shared graphics, copy and content ideas to help the partnership feel polished.</p>
-            </div>
-            <div>
-              <h4>Impact updates</h4>
-              <p>Simple reporting on volunteers, activity and visible community benefit from the work.</p>
-            </div>
-          </div>
+          </form>
         </article>
       </div>
-      <a class="button button--primary hero-cta group-card-button group-next__cta" href="https://tally.so/r/MeP2jX" target="_blank" rel="noreferrer">Start a partnership with us</a>
     </section>
   </main>
 
@@ -121,11 +167,11 @@
     <nav class="footer-column" aria-label="PureStreets links">
       <h2>Explore</h2>
       <a href="index.html#about">About</a>
-      <a href="assets/docs/community-litter-pick-guide.pdf" target="_blank" rel="noreferrer">Starter Handbook</a>
+      <a href="assets/docs/community-litter-pick-guide_compressed.pdf" target="_blank" rel="noreferrer">Starter Handbook</a>
       <a href="contact.html">Contact</a>
     </nav>
     <p class="footer-trademark">PureStreets<sup>TM</sup> 2026</p>
   </footer>
-  <script src="script.js"></script>
+  <script src="script.js?v=group-pages-1"></script>
 </body>
 </html>

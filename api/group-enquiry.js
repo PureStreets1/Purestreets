@@ -191,10 +191,22 @@ module.exports = async function groupEnquiry(req, res) {
       console.log('Group enquiry email notification sent.');
     }
 
+    const slackOk = slackResult.status === 'fulfilled' && slackResult.value?.ok === true;
+    const emailOk = emailResult.status === 'fulfilled';
+
+    if (!emailOk) {
+      return sendJson(res, 502, {
+        ok: false,
+        error: 'Email notification failed.',
+        slackOk,
+        emailOk
+      });
+    }
+
     return sendJson(res, 200, {
       ok: true,
-      slackOk: slackResult.status === 'fulfilled' && slackResult.value?.ok === true,
-      emailOk: emailResult.status === 'fulfilled'
+      slackOk,
+      emailOk
     });
   } catch (error) {
     console.error('Group enquiry API error:', error);

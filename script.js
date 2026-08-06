@@ -1244,6 +1244,7 @@ function initGroupCarouselForms() {
     const error = form.querySelector('[data-group-error]');
     const optionInputs = [...form.querySelectorAll('.mosque-option-card input')];
     const universityComboboxes = [...form.querySelectorAll('[data-university-combobox]')];
+    const submitButtonLabel = submitButton?.textContent || 'Submit';
     let currentStep = 0;
     let submitPending = false;
     let successTimer;
@@ -1541,6 +1542,61 @@ function initGroupCarouselForms() {
       };
     }
 
+    function buildGroupEmailFallbackData(payload) {
+      const primaryLabel = /isoc/i.test(payload.groupType) ? 'University' : 'Organisation/name';
+      const message = [
+        `New ${payload.groupType} Enquiry`,
+        '',
+        `Type: ${payload.groupType}`,
+        `${primaryLabel}: ${payload.organisationName || 'Not provided'}`,
+        `Location: ${payload.location || 'Not provided'}`,
+        `Support requested: ${payload.supportRequested.join(', ') || 'Not provided'}`,
+        `Frequency/timeline: ${payload.pickFrequency || 'Not provided'}`,
+        `Additional details: ${payload.additionalDetails || 'None provided'}`,
+        `Contact name: ${payload.contactName || 'Not provided'}`,
+        `Email: ${payload.contactEmail || 'Not provided'}`,
+        `Mobile: ${payload.phoneNumber || 'Not provided'}`,
+        '',
+        `Submitted from: ${payload.submittedFrom}`
+      ].join('\n');
+
+      const fallbackData = new FormData();
+      fallbackData.append('_subject', `New ${payload.groupType} enquiry`);
+      fallbackData.append('_template', 'table');
+      fallbackData.append('_captcha', 'false');
+      fallbackData.append('_next', `${window.location.origin}${window.location.pathname}?group-request=sent#${form.closest('section[id]')?.id || ''}`);
+      if (payload.contactEmail) {
+        fallbackData.append('email', payload.contactEmail);
+        fallbackData.append('_replyto', payload.contactEmail);
+        fallbackData.append('_cc', payload.contactEmail);
+      }
+      fallbackData.append('message', message);
+      return fallbackData;
+    }
+
+    async function sendGroupEmailFallback(payload) {
+      const fallbackEndpoint = form.dataset.emailFallback;
+      if (!fallbackEndpoint) return false;
+
+      const directEndpoint = fallbackEndpoint.replace('/ajax/', '/');
+      const fallbackForm = document.createElement('form');
+      fallbackForm.method = 'POST';
+      fallbackForm.action = directEndpoint;
+      fallbackForm.hidden = true;
+
+      buildGroupEmailFallbackData(payload).forEach((value, key) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        fallbackForm.append(input);
+      });
+
+      document.body.append(fallbackForm);
+      fallbackForm.submit();
+      return true;
+    }
+
     function showSuccess() {
       if (!submitPending) return;
       submitPending = false;
@@ -1554,6 +1610,7 @@ function initGroupCarouselForms() {
 
     async function submitGroupEnquiry() {
       const payload = buildPayload();
+      let sent = false;
 
       try {
         const response = await fetch(form.action, {
@@ -1564,11 +1621,30 @@ function initGroupCarouselForms() {
 
         if (!response.ok) {
           console.error('Group enquiry API failed:', response.status, await response.text().catch(() => ''));
+          sent = await sendGroupEmailFallback(payload);
+        } else {
+          const result = await response.json().catch(() => ({ ok: true, emailOk: true }));
+          sent = result.emailOk !== false;
+
+          if (!sent) {
+            sent = await sendGroupEmailFallback(payload);
+          }
         }
       } catch (error) {
         console.error('Group enquiry API error:', error);
+        sent = await sendGroupEmailFallback(payload);
       } finally {
-        showSuccess();
+        if (sent) {
+          showSuccess();
+        } else {
+          submitPending = false;
+          window.clearTimeout(successTimer);
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = submitButtonLabel;
+          }
+          setError('Sorry, we could not send your request. Please email purestreets0@gmail.com directly.');
+        }
       }
     }
 

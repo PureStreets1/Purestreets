@@ -92,7 +92,7 @@ without a verified finding and a logged decision.
    builds links by scanning the live DOM (`linkFor`); `addMessage()` linkifies
    URLs/`*.html` and marks external `https://` links `target="_blank"
    rel="noreferrer"`. No network calls — it is purely local.
-7. **ISOC competition counter + reset** — `renderCompetition()` and the
+7. **ISoc competition counter + reset** — `renderCompetition()` and the
    per-row click handler on `[data-team]` rows (`script.js:88-156`). `+`/`-`
    buttons (`[data-score-plus]`/`[data-score-minus]` valued `brothers|sisters`)
    adjust scores (clamped at 0), update `[data-score=…]`, `[data-team-total]`,
@@ -112,7 +112,7 @@ without a verified finding and a logged decision.
   increments/decrements are clamped with `Math.max(0, …)` (`script.js:100-103,
   145-147`).
 - Shape: `{ "<Team name>": { "brothers": <int≥0>, "sisters": <int≥0> }, … }`
-- Example: `{"UCL ISOC":{"brothers":3,"sisters":5},"KCL ISOC":{"brothers":0,"sisters":2}}`
+- Example: `{"UCL ISoc":{"brothers":3,"sisters":5},"KCL ISoc":{"brothers":0,"sisters":2}}`
 - Team total = `brothers + sisters`; leader = highest total; total 0 ⇒
   "Waiting for scores" (`script.js:113, 120-128`). Reset = `removeItem`
   (`:153-156`). Read is `try/catch`-guarded, falling back to `{}` (`:88-94`).

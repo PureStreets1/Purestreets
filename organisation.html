@@ -24,7 +24,7 @@
     <nav class="site-nav" data-nav>
       <a href="mosques.html">Mosques</a>
       <a href="volunteers.html">Volunteers</a>
-      <a href="isocs.html">ISOCs</a>
+      <a href="isocs.html">ISocs</a>
       <a class="is-active" href="organisation.html">Organisations</a>
       <a href="contact.html">Contact</a>
     </nav>
@@ -63,10 +63,6 @@
           <img src="assets/img/media.png" alt="" loading="lazy" aria-hidden="true" />
           <h3>Media support</h3>
         </article>
-        <article class="mosque-help-card">
-          <img src="assets/img/handbookicon.png" alt="" loading="lazy" aria-hidden="true" />
-          <h3>Impact updates</h3>
-        </article>
       </div>
     </section>
 
@@ -79,7 +75,7 @@
           <form class="mosque-carousel-form" action="/api/group-enquiry" method="POST" data-group-form data-group-type="Organisation" novalidate>
             <input type="hidden" name="Group type" value="Organisation" />
             <div class="mosque-carousel-form__top">
-              <p data-group-step-label>Step 1 of 6</p>
+              <p data-group-step-label>Step 1 of 3</p>
               <div class="mosque-carousel-form__progress" aria-hidden="true">
                 <span data-group-progress></span>
               </div>
@@ -95,42 +91,15 @@
                 </section>
 
                 <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-2">
-                  <fieldset class="mosque-carousel-form__fieldset" data-required-group>
-                    <legend id="organisation-form-step-2">What kind of partnership are you interested in?</legend>
-                    <label class="mosque-option-card"><input type="checkbox" name="Support requested" value="Sponsor equipment" /><span>Support or sponsor equipment</span></label>
-                    <label class="mosque-option-card"><input type="checkbox" name="Support requested" value="Run a campaign" /><span>Run a campaign or volunteering day</span></label>
-                    <label class="mosque-option-card"><input type="checkbox" name="Support requested" value="Support local communities" /><span>Support mosques or local communities</span></label>
-                    <label class="mosque-option-card"><input type="checkbox" name="Support requested" value="Explore partnership options" /><span>Explore partnership options</span></label>
-                  </fieldset>
+                  <label class="mosque-carousel-form__field">
+                    <span id="organisation-form-step-2">What is your email address?</span>
+                    <input type="email" name="email" autocomplete="email" required />
+                  </label>
                 </section>
 
                 <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-3">
-                  <fieldset class="mosque-carousel-form__fieldset" data-required-group>
-                    <legend id="organisation-form-step-3">What sort of partnership timeline are you considering?</legend>
-                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="One-off campaign" required /><span>One-off campaign</span></label>
-                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Seasonal partnership" /><span>Seasonal partnership</span></label>
-                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Ongoing support" /><span>Ongoing support</span></label>
-                    <label class="mosque-option-card"><input type="radio" name="Pick frequency" value="Not sure yet" /><span>Not sure yet</span></label>
-                  </fieldset>
-                </section>
-
-                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-4">
                   <label class="mosque-carousel-form__field">
-                    <span id="organisation-form-step-4">Anything else you would like us to know?</span>
-                    <textarea name="Additional details" rows="5"></textarea>
-                  </label>
-                </section>
-
-                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-5">
-                  <label class="mosque-carousel-form__field">
-                    <span id="organisation-form-step-5">What is your name?</span>
-                    <input type="text" name="Contact name" autocomplete="name" required />
-                  </label>
-                </section>
-
-                <section class="mosque-carousel-form__slide" data-group-slide aria-labelledby="organisation-form-step-6">
-                  <label class="mosque-carousel-form__field">
-                    <span id="organisation-form-step-6">What is your mobile number?</span>
+                    <span id="organisation-form-step-3">What is your phone number?</span>
                     <input type="tel" name="Phone number" autocomplete="tel" inputmode="tel" required pattern="^[+()0-9\s-]{7,20}$" />
                   </label>
                 </section>
@@ -161,7 +130,7 @@
       <h2>Groups</h2>
       <a href="mosques.html">Mosques</a>
       <a href="volunteers.html">Volunteers</a>
-      <a href="isocs.html">ISOCs</a>
+      <a href="isocs.html">ISocs</a>
       <a href="organisation.html">Organisations</a>
     </nav>
     <nav class="footer-column" aria-label="PureStreets links">

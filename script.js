@@ -1,7 +1,7 @@
 const header = document.querySelector('[data-header]');
 const hero = document.querySelector('.hero');
 const heroTitle = document.querySelector('#hero-title');
-const pageTitle = heroTitle || document.querySelector('.group-hero h1, .campaign-hero h1, .contact-hero h1, .volunteer-hero h1, .charity-hero h1, .work-hero h1, .team-hero h1');
+const pageTitle = heroTitle || document.querySelector('.group-hero h1, .challenge-hero h1, .campaign-hero h1, .contact-hero h1, .volunteer-hero h1, .charity-hero h1, .work-hero h1, .team-hero h1');
 const nav = document.querySelector('[data-nav]');
 const navToggle = document.querySelector('[data-nav-toggle]');
 const navLinks = [...document.querySelectorAll('.site-nav a')];
@@ -82,6 +82,37 @@ comingSoonLinks.forEach((link) => {
     showComingSoonMessage();
   });
 });
+
+function initStickyCta() {
+  const stickyCta = document.querySelector('[data-sticky-cta]');
+  const trigger = document.querySelector('[data-sticky-cta-trigger]');
+  if (!stickyCta || !trigger) return;
+
+  function setStickyVisible(isVisible) {
+    stickyCta.classList.toggle('is-visible', isVisible);
+    stickyCta.setAttribute('aria-hidden', String(!isVisible));
+    stickyCta.tabIndex = isVisible ? 0 : -1;
+  }
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      setStickyVisible(!entry.isIntersecting);
+    }, { threshold: 0.05 });
+
+    observer.observe(trigger);
+    return;
+  }
+
+  function updateStickyCta() {
+    const rect = trigger.getBoundingClientRect();
+    setStickyVisible(rect.bottom <= 0 || rect.top >= window.innerHeight);
+  }
+
+  updateStickyCta();
+  window.addEventListener('scroll', updateStickyCta, { passive: true });
+  window.addEventListener('resize', updateStickyCta);
+}
 
 if ('IntersectionObserver' in window) {
   const sectionObserver = new IntersectionObserver((entries) => {
@@ -1169,6 +1200,40 @@ function initGroupCarouselForms() {
   const forms = [...document.querySelectorAll('[data-group-form]')];
   if (!forms.length) return;
 
+  const UNIVERSITY_OTHER_VALUE = 'Other institution not listed';
+  const universityDataCache = new Map();
+
+  function normaliseUniversitySearch(value) {
+    return String(value || '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim();
+  }
+
+  function universitySearchText(university) {
+    return normaliseUniversitySearch([
+      university.name,
+      university.nation,
+      ...(Array.isArray(university.aliases) ? university.aliases : [])
+    ].join(' '));
+  }
+
+  async function loadUniversityData(src) {
+    if (!src) return [];
+    if (!universityDataCache.has(src)) {
+      universityDataCache.set(src, fetch(src).then((response) => {
+        if (!response.ok) throw new Error(`Unable to load universities: ${response.status}`);
+        return response.json();
+      }).catch((error) => {
+        console.error(error);
+        return [];
+      }));
+    }
+
+    const universities = await universityDataCache.get(src);
+    return universities.map((university) => ({
+      ...university,
+      searchText: university.searchText || universitySearchText(university)
+    }));
+  }
+
   forms.forEach((form) => {
     const slides = [...form.querySelectorAll('[data-group-slide]')];
     const stepLabel = form.querySelector('[data-group-step-label]');
@@ -1178,6 +1243,7 @@ function initGroupCarouselForms() {
     const success = form.querySelector('[data-group-success]');
     const error = form.querySelector('[data-group-error]');
     const optionInputs = [...form.querySelectorAll('.mosque-option-card input')];
+    const universityComboboxes = [...form.querySelectorAll('[data-university-combobox]')];
     let currentStep = 0;
     let submitPending = false;
     let successTimer;
@@ -1206,6 +1272,198 @@ function initGroupCarouselForms() {
         form.style.setProperty('--mosque-form-active-height', `${activeSlide.scrollHeight}px`);
       });
     }
+
+    function setupUniversityCombobox(root) {
+      const input = root.querySelector('[data-university-input]');
+      const hiddenValue = root.querySelector('[data-university-value]');
+      const list = root.querySelector('[data-university-list]');
+      const otherWrap = root.querySelector('[data-university-other-wrap]');
+      const otherInput = root.querySelector('[data-university-other]');
+      const src = root.dataset.universitiesSrc;
+      let universities = [];
+      let visibleOptions = [];
+      let activeIndex = -1;
+      let selectedUniversity = '';
+      let optionsOpen = false;
+
+      if (!input || !list) return null;
+
+      function setOpen(isOpen) {
+        optionsOpen = isOpen;
+        list.hidden = !isOpen;
+        input.setAttribute('aria-expanded', String(isOpen));
+        if (!isOpen) {
+          activeIndex = -1;
+          input.removeAttribute('aria-activedescendant');
+        }
+        updateHeight();
+      }
+
+      function setActiveOption(index) {
+        activeIndex = Math.max(-1, Math.min(index, visibleOptions.length - 1));
+        list.querySelectorAll('[role="option"]').forEach((option, optionIndex) => {
+          const isActive = optionIndex === activeIndex;
+          option.classList.toggle('is-active', isActive);
+          option.setAttribute('aria-selected', String(isActive));
+          if (isActive) {
+            input.setAttribute('aria-activedescendant', option.id);
+            option.scrollIntoView({ block: 'nearest' });
+          }
+        });
+
+        if (activeIndex < 0) input.removeAttribute('aria-activedescendant');
+      }
+
+      function syncOtherField() {
+        const isOther = selectedUniversity === UNIVERSITY_OTHER_VALUE;
+        if (otherWrap) otherWrap.hidden = !isOther;
+        if (otherInput) {
+          otherInput.disabled = !isOther;
+          otherInput.required = isOther;
+          if (!isOther) otherInput.value = '';
+        }
+        updateHeight();
+      }
+
+      function chooseUniversity(university) {
+        selectedUniversity = university.name;
+        input.value = university.name;
+        if (hiddenValue) hiddenValue.value = university.name;
+        input.removeAttribute('aria-invalid');
+        hiddenValue?.removeAttribute('aria-invalid');
+        setError();
+        setOpen(false);
+        syncOtherField();
+      }
+
+      function renderOptions(query = input.value) {
+        const normalisedQuery = normaliseUniversitySearch(query);
+        if (!normalisedQuery) {
+          visibleOptions = [];
+          list.innerHTML = '';
+          setOpen(false);
+          return;
+        }
+
+        const matches = universities
+          .filter((university) => university.name !== UNIVERSITY_OTHER_VALUE && university.searchText.includes(normalisedQuery))
+          .slice(0, 10);
+
+        visibleOptions = matches;
+        list.innerHTML = '';
+
+        if (!matches.length) {
+          const empty = document.createElement('p');
+          empty.className = 'university-combobox__empty';
+          empty.textContent = 'No matching university found';
+          list.append(empty);
+          setOpen(true);
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        matches.forEach((university, index) => {
+          const option = document.createElement('button');
+          const name = document.createElement('strong');
+          const detail = document.createElement('small');
+          option.type = 'button';
+          option.id = `${input.id || 'university-option'}-${index}`;
+          option.className = 'university-combobox__option';
+          option.setAttribute('role', 'option');
+          option.setAttribute('aria-selected', 'false');
+          option.addEventListener('click', () => chooseUniversity(university));
+          name.textContent = university.name;
+          detail.textContent = university.aliases?.length ? `${university.nation} - ${university.aliases.join(', ')}` : university.nation;
+          option.append(name, detail);
+          fragment.append(option);
+        });
+
+        list.append(fragment);
+        setOpen(true);
+        setActiveOption(-1);
+      }
+
+      function validate() {
+        input.removeAttribute('aria-invalid');
+        hiddenValue?.removeAttribute('aria-invalid');
+        otherInput?.removeAttribute('aria-invalid');
+
+        const typedValue = input.value.trim();
+        if (!typedValue) {
+          input.setAttribute('aria-invalid', 'true');
+          setError('Please enter your university name.');
+          input.focus();
+          renderOptions(input.value);
+          return false;
+        }
+
+        if (hiddenValue) hiddenValue.value = typedValue;
+
+        if (selectedUniversity === UNIVERSITY_OTHER_VALUE) {
+          const otherValue = otherInput?.value.trim() || '';
+          if (!otherValue) {
+            otherInput?.setAttribute('aria-invalid', 'true');
+            setError('Please enter your university or institution name.');
+            otherInput?.focus();
+            return false;
+          }
+          hiddenValue.value = otherValue;
+        }
+
+        return true;
+      }
+
+      loadUniversityData(src).then((items) => {
+        universities = items;
+        renderOptions('');
+        setOpen(false);
+      });
+
+      input.addEventListener('focus', () => {
+        if (!universities.length) {
+          loadUniversityData(src).then((items) => {
+            universities = items;
+            renderOptions(input.value);
+          });
+          return;
+        }
+        renderOptions(input.value);
+      });
+
+      input.addEventListener('input', () => {
+        selectedUniversity = '';
+        if (hiddenValue) hiddenValue.value = '';
+        syncOtherField();
+        renderOptions(input.value);
+      });
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          if (!optionsOpen) renderOptions(input.value);
+          setActiveOption(activeIndex + 1);
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          if (!optionsOpen) renderOptions(input.value);
+          setActiveOption(activeIndex <= 0 ? visibleOptions.length - 1 : activeIndex - 1);
+        } else if (event.key === 'Enter') {
+          if (optionsOpen && activeIndex >= 0 && visibleOptions[activeIndex]) {
+            event.preventDefault();
+            chooseUniversity(visibleOptions[activeIndex]);
+          }
+        } else if (event.key === 'Escape') {
+          setOpen(false);
+        }
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) setOpen(false);
+      });
+
+      return { root, validate };
+    }
+
+    const universityControls = universityComboboxes.map(setupUniversityCombobox).filter(Boolean);
 
     function setStep(index) {
       currentStep = Math.max(0, Math.min(index, slides.length - 1));
@@ -1243,15 +1501,21 @@ function initGroupCarouselForms() {
         return hasSelection;
       }
 
+      const universityControl = universityControls.find((control) => slide.contains(control.root));
+      if (universityControl && !universityControl.validate()) {
+        return false;
+      }
+
       const requiredInputs = [...slide.querySelectorAll('input[required], textarea[required], select[required]')];
       for (const input of requiredInputs) {
         const value = input.value.trim();
         const isPhone = input.type === 'tel';
-        const isValid = value.length > 0 && (!isPhone || /^[+()0-9\s-]{7,20}$/.test(value));
+        const isEmail = input.type === 'email';
+        const isValid = value.length > 0 && (!isPhone || /^[+()0-9\s-]{7,20}$/.test(value)) && (!isEmail || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value));
 
         if (!isValid) {
           input.setAttribute('aria-invalid', 'true');
-          setError(isPhone ? 'Please enter a valid mobile number.' : 'Please complete this field.');
+          setError(isPhone ? 'Please enter a valid mobile number.' : isEmail ? 'Please enter a valid email address.' : 'Please complete this field.');
           input.focus();
           return false;
         }
@@ -1265,11 +1529,13 @@ function initGroupCarouselForms() {
       return {
         groupType: String(data.get('Group type') || form.dataset.groupType || 'General').trim(),
         organisationName: String(data.get('Organisation name') || '').trim(),
+        isocName: String(data.get('ISoc name') || '').trim(),
         location: String(data.get('Location') || '').trim(),
         supportRequested: data.getAll('Support requested').map((item) => String(item).trim()).filter(Boolean),
         pickFrequency: String(data.get('Pick frequency') || '').trim(),
         additionalDetails: String(data.get('Additional details') || '').trim(),
         contactName: String(data.get('Contact name') || '').trim(),
+        contactEmail: String(data.get('email') || '').trim(),
         phoneNumber: String(data.get('Phone number') || '').trim(),
         submittedFrom: `${String(data.get('Group type') || form.dataset.groupType || 'Group').trim()} page`
       };
@@ -1346,6 +1612,7 @@ function initGroupCarouselForms() {
   });
 }
 initRippleEffect();
+initStickyCta();
 initPureBot();
 initVolunteerTracker();
 initMosqueCarouselForm();

@@ -232,7 +232,7 @@
 
         var name = prompt('Volunteer name:', entry.name);
         if (name === null) return;
-        var school = prompt('School / ISOC:', entry.school || '');
+        var school = prompt('School / ISoc:', entry.school || '');
         if (school === null) return;
         var bags = prompt('Bags collected:', entry.bags);
         if (bags === null) return;

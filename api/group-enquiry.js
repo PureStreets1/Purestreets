@@ -43,44 +43,62 @@ function normaliseList(value) {
 function validatePayload(payload) {
   const groupType = cleanText(payload.groupType);
   const organisationName = cleanText(payload.organisationName);
+  const isocName = cleanText(payload.isocName);
   const location = cleanText(payload.location);
   const contactName = cleanText(payload.contactName);
+  const contactEmail = cleanText(payload.contactEmail);
   const phoneNumber = cleanText(payload.phoneNumber);
   const pickFrequency = cleanText(payload.pickFrequency);
   const additionalDetails = cleanText(payload.additionalDetails);
   const supportRequested = normaliseList(payload.supportRequested);
   const primaryName = organisationName || location;
+  const isIsocChallenge = /isoc/i.test(groupType);
+  const isOrganisation = /organisation|organization/i.test(groupType);
+  const requiresEmail = isIsocChallenge || isOrganisation;
+  const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail);
   const phoneIsValid = /^[+()0-9\s-]{7,20}$/.test(phoneNumber);
-  const missingRequiredField = !groupType || !primaryName || !supportRequested.length || !pickFrequency || !contactName || !phoneNumber;
+  const missingRequiredField = isOrganisation
+    ? !groupType || !primaryName || !contactEmail || !phoneNumber
+    : isIsocChallenge
+      ? !groupType || !primaryName || !contactName || !contactEmail || !phoneNumber
+      : !groupType || !primaryName || !supportRequested.length || !pickFrequency || !contactName || !phoneNumber;
 
   return {
-    isValid: Boolean(!missingRequiredField && phoneIsValid),
+    isValid: Boolean(!missingRequiredField && phoneIsValid && (!requiresEmail || emailIsValid)),
     data: {
       groupType,
       organisationName,
+      isocName,
       location,
       contactName,
+      contactEmail,
       phoneNumber,
       pickFrequency,
       additionalDetails,
       supportRequested,
       submittedFrom: cleanText(payload.submittedFrom) || `${groupType} page`
     },
-    error: missingRequiredField ? 'Missing required fields.' : 'Invalid phone number.'
+    error: missingRequiredField ? 'Missing required fields.' : phoneIsValid ? 'Invalid email address.' : 'Invalid phone number.'
   };
 }
 
 function buildMessage(data) {
+  const isIsocChallenge = /isoc/i.test(data.groupType);
+  const primaryLabel = isIsocChallenge ? 'University' : 'Organisation/name';
+  const isocLine = isIsocChallenge && data.isocName ? [`ISoc name: ${data.isocName}`] : [];
+
   return [
     `New ${data.groupType} Enquiry`,
     '',
     `Type: ${data.groupType}`,
-    `Organisation/name: ${data.organisationName || 'Not provided'}`,
+    `${primaryLabel}: ${data.organisationName || 'Not provided'}`,
+    ...isocLine,
     `Location: ${data.location || 'Not provided'}`,
-    `Support requested: ${data.supportRequested.join(', ')}`,
+    `Support requested: ${data.supportRequested.join(', ') || 'Not provided'}`,
     `Frequency/timeline: ${data.pickFrequency || 'Not provided'}`,
     `Additional details: ${data.additionalDetails || 'None provided'}`,
     `Contact name: ${data.contactName || 'Not provided'}`,
+    `Email: ${data.contactEmail || 'Not provided'}`,
     `Mobile: ${data.phoneNumber || 'Not provided'}`,
     '',
     `Submitted from: ${data.submittedFrom}`
@@ -109,13 +127,19 @@ async function sendSlackNotification(text) {
   return { ok: true, status: response.status };
 }
 
-async function sendEmailNotification(text, groupType) {
+async function sendEmailNotification(text, groupType, contactEmail) {
   const params = new URLSearchParams({
     _subject: `New ${groupType} enquiry`,
     _template: 'table',
     _captcha: 'false',
     message: text
   });
+
+  if (contactEmail) {
+    params.set('email', contactEmail);
+    params.set('_replyto', contactEmail);
+    params.set('_cc', contactEmail);
+  }
 
   const response = await fetch(EMAIL_ENDPOINT, {
     method: 'POST',
@@ -152,7 +176,7 @@ module.exports = async function groupEnquiry(req, res) {
     const message = buildMessage(data);
     const [slackResult, emailResult] = await Promise.allSettled([
       sendSlackNotification(message),
-      sendEmailNotification(message, data.groupType)
+      sendEmailNotification(message, data.groupType, data.contactEmail)
     ]);
 
     if (slackResult.status === 'rejected') {

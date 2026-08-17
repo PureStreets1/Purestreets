@@ -1247,7 +1247,6 @@ function initGroupCarouselForms() {
     const submitButtonLabel = submitButton?.textContent || 'Submit';
     let currentStep = 0;
     let submitPending = false;
-    let successTimer;
 
     function setError(message = '') {
       if (error) error.textContent = message;
@@ -1600,12 +1599,30 @@ function initGroupCarouselForms() {
     function showSuccess() {
       if (!submitPending) return;
       submitPending = false;
-      window.clearTimeout(successTimer);
       form.classList.add('is-complete');
       if (success) {
         success.hidden = false;
         success.focus?.();
       }
+    }
+
+    function showReturnedSuccess() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('group-request') !== 'sent') return false;
+
+      submitPending = true;
+      slides.forEach((slide) => {
+        slide.hidden = true;
+        slide.setAttribute('aria-hidden', 'true');
+        slide.toggleAttribute('inert', true);
+      });
+      setButtonVisible(backButton, false);
+      setButtonVisible(nextButton, false);
+      setButtonVisible(submitButton, false);
+      setError();
+      showSuccess();
+      form.scrollIntoView({ block: 'center' });
+      return true;
     }
 
     async function submitGroupEnquiry() {
@@ -1638,7 +1655,6 @@ function initGroupCarouselForms() {
           showSuccess();
         } else {
           submitPending = false;
-          window.clearTimeout(successTimer);
           if (submitButton) {
             submitButton.disabled = false;
             submitButton.textContent = submitButtonLabel;
@@ -1679,12 +1695,12 @@ function initGroupCarouselForms() {
         submitButton.disabled = true;
         submitButton.textContent = 'Sending...';
       }
-      successTimer = window.setTimeout(showSuccess, 3000);
       submitGroupEnquiry();
     });
 
     markOptions();
     setStep(0);
+    showReturnedSuccess();
   });
 }
 initRippleEffect();

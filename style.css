@@ -7829,8 +7829,7 @@ h3 {
   }
 
   .challenge-section--steps .challenge-process__track::before {
-    content: "";
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.22));
+    content: none;
   }
 
   .challenge-process__step {
@@ -7914,13 +7913,14 @@ h3 {
 
   .challenge-hero::before {
     background-position: 54% center;
+    filter: brightness(1) saturate(1.18) contrast(1.02);
     transform: none;
   }
 
   .challenge-hero::after {
     background:
-      radial-gradient(ellipse at 35% 80%, rgba(0, 0, 0, 0.76) 0%, rgba(0, 0, 0, 0.52) 30%, rgba(0, 0, 0, 0.16) 52%, transparent 72%),
-      linear-gradient(180deg, transparent 54%, rgba(0, 0, 0, 0.28) 84%, rgba(0, 0, 0, 0.42) 100%);
+      radial-gradient(ellipse at 42% 86%, rgba(0, 0, 0, 0.74) 0%, rgba(0, 0, 0, 0.48) 28%, rgba(0, 0, 0, 0.14) 48%, transparent 66%),
+      linear-gradient(180deg, transparent 64%, rgba(0, 0, 0, 0.18) 80%, rgba(0, 0, 0, 0.52) 100%);
   }
 
   .challenge-hero__content {

@@ -1,4 +1,4 @@
-const EMAIL_ENDPOINT = 'https://formsubmit.co/ajax/purestreets0@gmail.com';
+const { sendEnquiryEmail } = require('../lib/enquiry-email');
 
 function sendJson(res, status, payload) {
   res.statusCode = status;
@@ -118,6 +118,7 @@ async function sendSlackNotification(text) {
   });
 
   const response = await fetch(webhookUrl, {
+    signal: AbortSignal.timeout(6000),
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -140,6 +141,7 @@ async function sendEmailNotification(text, contactEmail) {
     _subject: 'New mosque support pack request',
     _template: 'table',
     _captcha: 'false',
+    _url: 'https://purestreets.org/mosques.html',
     message: text
   });
 
@@ -149,21 +151,7 @@ async function sendEmailNotification(text, contactEmail) {
     params.set('_cc', contactEmail);
   }
 
-  const response = await fetch(EMAIL_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: params.toString()
-  });
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(`Email notification failed with ${response.status}: ${detail}`);
-  }
-
-  return { ok: true };
+  return sendEnquiryEmail(params);
 }
 
 module.exports = async function mosqueEnquiry(req, res) {

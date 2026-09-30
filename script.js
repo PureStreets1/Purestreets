@@ -1164,7 +1164,10 @@ async function submitEnquiryDelivery(form, payload, data) {
       headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
     });
     const result = await response.json();
-    if (response.ok && result.ok === true && result.emailOk === true) return true;
+    if (response.ok && result.ok === true && result.emailOk === true) {
+      setEnquiryConfirmation(form, result.provider);
+      return true;
+    }
     if (result.deliveryAttempted === true || response.status === 400) {
       return showEnquiryRecovery(form, data);
     }
@@ -1200,10 +1203,24 @@ async function sendBrowserEnquiryFallback(form, data) {
         ] })
       });
       const result = await response.json();
-      if (response.ok && result.success === true && result.submission?.hashId) return true;
+      if (response.ok && result.success === true && result.submission?.hashId) {
+        setEnquiryConfirmation(form, 'forminit');
+        return true;
+      }
     } catch (error) { /* Keep all details available for direct email. */ }
   }
   return showEnquiryRecovery(form, data);
+}
+
+function setEnquiryConfirmation(form, provider) {
+  if (provider !== 'forminit') return;
+  const message = form.querySelector('[data-mosque-success] p, [data-group-success] p');
+  if (!message) return;
+  message.textContent = 'Your enquiry was submitted using our backup system. You will not receive an email receipt. If nobody gets back to you within 3 days, please email ';
+  const email = document.createElement('a');
+  email.href = 'mailto:purestreets0@gmail.com';
+  email.textContent = 'purestreets0@gmail.com';
+  message.append(email, '.');
 }
 
 function showEnquiryRecovery(form, data) {

@@ -6,6 +6,7 @@ async function runTests(source) {
   }
   const cases = [
     { name: 'server success stops', api: { ok: true, emailOk: true }, calls: 1, sent: true },
+    { name: 'server backup explains missing receipt', api: { ok: true, emailOk: true, provider: 'forminit' }, calls: 1, sent: true, receiptNotice: true },
     { name: 'known exhaustion goes directly to email', api: { deliveryAttempted: true }, status: 502, calls: 1 },
     { name: 'primary browser success stops', primary: true, calls: 2, sent: true },
     { name: 'browser backup succeeds', backup: true, calls: 3, sent: true },
@@ -19,7 +20,9 @@ async function runTests(source) {
     const form = element('form');
     form.action = '/api/group-enquiry';
     form.dataset = { emailFallback: 'https://formsubmit.co/ajax/test', forminitId: test.unconfigured ? '' : 'test-form' };
-    form.querySelector = () => null;
+    const confirmation = element('p');
+    confirmation.textContent = 'Original confirmation';
+    form.querySelector = (selector) => selector.includes('data-mosque-success') ? confirmation : null;
     const fakeFetch = async (url, options) => {
       calls.push(url);
       if (calls.length === 1) return {
@@ -43,6 +46,11 @@ async function runTests(source) {
     const data = new URLSearchParams({ email: 'test@example.com', _subject: 'Test', message: 'Test details' });
     const sent = await submit(form, {}, data);
     if (sent !== !!test.sent || calls.length !== test.calls) throw new Error(`${test.name} failed`);
+    if (sent && (test.backup || test.receiptNotice)) {
+      if (!confirmation.textContent.includes('will not receive an email receipt') || !confirmation.textContent.includes('within 3 days') || confirmation.children[0]?.href !== 'mailto:purestreets0@gmail.com') {
+        throw new Error(`${test.name}: backup receipt message missing`);
+      }
+    } else if (confirmation.textContent !== 'Original confirmation') throw new Error('Primary confirmation changed');
     if (!sent) {
       const panel = form.children[0];
       if (!panel || !panel.children[1].href.startsWith('mailto:purestreets0@gmail.com?') || panel.children[2].children[0].value !== 'Test details') {

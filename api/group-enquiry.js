@@ -194,6 +194,7 @@ module.exports = async function groupEnquiry(req, res) {
 
     return sendJson(res, 200, {
       ok: true,
+      provider: emailResult.value.provider,
       slackOk,
       emailOk
     });

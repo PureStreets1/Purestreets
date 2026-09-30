@@ -1,38 +1,42 @@
-# Enquiry delivery and recovery
+# Three-layer enquiry delivery
 
-Applies to ISoc, mosque and organisation enquiries.
+All three forms (ISoc, mosque and organisation) use this order:
 
-## Implemented routes
+1. **FormSubmit**: try for up to six seconds; require an explicit success response.
+2. **Forminit**: try for up to six seconds if FormSubmit fails; require a successful submission receipt.
+3. **Direct email**: show purestreets0@gmail.com, a prefilled email link and selectable enquiry details. Keep the form populated. Opening the email app does not count as sending.
 
-1. The server tries FormSubmit for up to six seconds, and checks its JSON acceptance response.
-2. If that fails, it tries Resend for up to six seconds, when configured. The enquiry goes to purestreets0@gmail.com with the existing visitor CC and Reply-To behaviour.
-3. The existing Slack notification runs independently with a six-second limit. It is an operational backup copy, not proof that email was delivered.
-4. If the website API fails, the browser tries FormSubmit directly for up to eight seconds. This handles unavailable server functions; it does not provide independence from a FormSubmit outage.
-5. If automatic sending fails, the visitor stays on the page with their form intact, a prefilled email link and a selectable copy of the enquiry. Opening the email app does not count as sending. No enquiry is stored in browser persistent storage.
+Resend has been replaced by Forminit. Existing Slack notifications remain independent operational copies, not a condition for form success.
 
-Provider acceptance is not proof of inbox delivery. A timed-out request might still have been accepted, so failover or manual retry can produce duplicates. This implementation has no durable queue or automatic background retries.
+The server handles the first two layers when available. If it reports both failed, the browser goes straight to direct email without repeating them. If the API itself is unreachable, the browser can run the same provider order using a public Forminit form ID. An unknown timeout can still cause duplicates; there is no durable queue or automatic background retry.
 
-## Enable the independent email backup
+## Activate Forminit (required)
 
-Use a host that runs the existing CommonJS `/api/group-enquiry` and `/api/mosque-enquiry` server functions with Node 20+ and a function timeout of at least 15 seconds. Static hosting alone cannot run these functions.
+No Forminit account or form ID was supplied, so layer two is prepared but inactive.
 
-Configure these secrets in the hosting dashboard, never in HTML or browser JavaScript:
+1. Create an account and form at https://forminit.com/ . One form can receive all three enquiry types; the submitted subject and message identify the type.
+2. In that form's **Settings → Actions**, enable **Email notifications** and set the recipient to **purestreets0@gmail.com**. Keep the subject and message blocks visible in the notification. Set Reply-to to the sender email using the variable picker.
+3. Copy the form ID from `https://forminit.com/f/FORM_ID`.
+4. For the server routes, set `FORMINIT_FORM_ID` in the hosting dashboard. For a protected form, also set the secret `FORMINIT_API_KEY` there. Never put API keys in HTML or browser JavaScript.
+5. To support static hosting or an unavailable API, use a public form and fill `data-forminit-id=""` on the form in `isocs.html`, `mosques.html` and `organisation.html` with that same ID. Public form IDs are not secret. Protected forms cannot be submitted directly from this browser fallback.
+6. Redeploy, submit a labelled test and verify both the Forminit dashboard entry and the notification in the team inbox. Do not assume the email action is enabled merely because Forminit accepted the submission.
 
-- `RESEND_API_KEY`: a Resend sending API key.
-- `ENQUIRY_EMAIL_FROM`: a sender address on a domain verified in Resend.
-- `SLACK_WEBHOOK_URL`: the existing optional channel webhook, if a monitored Slack copy is wanted.
+Official setup: https://forminit.com/docs/html/
+API contract: https://forminit.com/docs/submit-form-api/
+Notifications: https://forminit.com/docs/email-notifications/
 
-Redeploy after setting the variables. Resend setup: https://resend.com/docs/api-reference/emails/send-email
+FormSubmit retains its existing visitor CC. Forminit visitor receipts require a separately configured autoresponder, currently documented as a Business-plan feature: https://forminit.com/docs/autoresponder/ . The site no longer promises that a visitor copy has already been emailed.
 
-## Verification and outage procedure
+## Hosting and verification
 
-- Run `node tests/enquiry-email.test.js` for mocked failover checks; these do not send messages.
-- In staging, submit one clearly labelled test from each form, using an inbox you control. Confirm the team email and visitor copy actually arrive.
-- Simulate FormSubmit failure in staging and verify Resend acceptance and inbox receipt. Also simulate both providers failing and confirm the form remains populated and the manual email/copy options appear.
-- Monitor HTTP 502 responses from both API routes and provider delivery/bounce logs. Monitoring infrastructure is not installed by this change.
-- During an outage, monitor the configured Slack channel, reconcile enquiries against received emails, and use direct email for urgent enquiries. Do not assume a failed request was queued.
-- If longer outages must be handled without visitor intervention, the next step is a durable database/outbox with submission IDs, background retries, deduplication and an agreed retention period. This requires a provisioned database and worker; it is not enabled here.
+Server routes require Node 20+ and a function timeout of at least 15 seconds. Static hosting alone cannot execute the `/api` files; configure the public browser form ID for that case. The optional `SLACK_WEBHOOK_URL` remains server-only. Resend credentials are no longer used.
+
+Run `node tests/enquiry-email.test.js` and `node tests/enquiry-browser.test.js` for mocked provider-order and recovery checks. No real messages are sent by these tests.
+
+In staging, test normal success, FormSubmit failure with Forminit success, both providers failing, and unavailable API routes. Verify recovery preserves details and does not show success. Check actual inbox receipt for all three form types after configuration.
+
+Provider acceptance does not prove inbox delivery. Monitor provider notifications and API errors; monitor Slack when configured. During an outage, use the direct email option. A durable database/outbox, background worker, deduplication and retention policy are future work, not installed by this change.
 
 ## Rollback
 
-Remove the Resend environment variables to disable the independent provider. Browser recovery remains available. Revert the code changes to restore the previous submission flow.
+Revert this change to restore the prior Resend integration. Clearing `FORMINIT_FORM_ID` and the public form IDs disables layer two; layers one and three still operate.

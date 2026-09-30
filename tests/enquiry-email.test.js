@@ -28,17 +28,17 @@ async function runTests(source) {
           }
         };
       }
-      check(url === 'https://api.resend.com/emails', 'Wrong backup endpoint');
+      check(url === 'https://forminit.com/f/test-form', 'Wrong backup endpoint');
       const body = JSON.parse(options.body);
-      check(body.to[0] === 'purestreets0@gmail.com', 'Recipient changed');
-      check(body.reply_to === 'visitor@example.com' && body.cc[0] === 'visitor@example.com', 'Missing reply/copy');
-      check(body.text === 'Test enquiry' && body.subject === 'Test subject', 'Lost enquiry content');
-      return { ok: !test.backupStatus, json: async () => test.backupBody || { id: 'test-receipt' } };
+      check(options.headers['X-API-KEY'] === 'test-key', 'Missing server credential');
+      check(body.blocks[0].properties.email === 'visitor@example.com', 'Lost sender');
+      check(body.blocks[2].value === 'Test enquiry' && body.blocks[1].value === 'Test subject', 'Lost enquiry content');
+      return { ok: !test.backupStatus, json: async () => test.backupBody || { success: true, submission: { hashId: 'test-receipt' } } };
     };
     const mod = { exports: {} };
     new Function('fetch', 'process', 'AbortSignal', 'module', 'console', source)(
       fakeFetch,
-      { env: test.unconfigured ? {} : { RESEND_API_KEY: 'test-key', ENQUIRY_EMAIL_FROM: 'test@example.com' } },
+      { env: test.unconfigured ? {} : { FORMINIT_API_KEY: 'test-key', FORMINIT_FORM_ID: 'test-form' } },
       { timeout: (ms) => ms }, mod, { error() {} }
     );
     let ok = false;

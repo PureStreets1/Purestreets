@@ -194,6 +194,7 @@ module.exports = async function mosqueEnquiry(req, res) {
       return sendJson(res, 502, {
         ok: false,
         error: 'Email notification failed.',
+        deliveryAttempted: true,
         slackOk,
         emailOk
       });

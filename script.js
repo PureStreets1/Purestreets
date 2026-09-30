@@ -1040,9 +1040,6 @@ function initMosqueCarouselForm() {
     return fallbackData;
   }
 
-  async function sendEmailFallback(payload) {
-    return sendBrowserEnquiryFallback(form, buildEmailFallbackData(payload));
-  }
 
   async function submitMosqueEnquiry() {
     form.querySelector('[data-enquiry-recovery]')?.remove();
@@ -1050,27 +1047,7 @@ function initMosqueCarouselForm() {
     let sent = false;
 
     try {
-      const response = await fetch(form.action, {
-          signal: AbortSignal.timeout(16000),
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        console.error('Mosque enquiry API failed:', response.status, await response.text().catch(() => ''));
-        sent = await sendEmailFallback(payload);
-      } else {
-        const result = await response.json();
-        sent = result.ok === true && result.emailOk === true;
-
-        if (!sent) {
-          sent = await sendEmailFallback(payload);
-        }
-      }
-    } catch (error) {
-      console.error('Mosque enquiry API error:', error);
-      sent = await sendEmailFallback(payload);
+      sent = await submitEnquiryDelivery(form, payload, buildEmailFallbackData(payload));
     } finally {
       if (sent) {
         showSuccess();
@@ -1179,46 +1156,78 @@ function initMosqueCarouselForm() {
   showReturnedSuccess();
 }
 
-// Keep visitors on the page even when the API or email provider is unavailable.
+// The API owns provider ordering. Only retry from the browser if the API is unavailable.
+async function submitEnquiryDelivery(form, payload, data) {
+  try {
+    const response = await fetch(form.action, {
+      method: 'POST', signal: AbortSignal.timeout(16000),
+      headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (response.ok && result.ok === true && result.emailOk === true) return true;
+    if (result.deliveryAttempted === true || response.status === 400) {
+      return showEnquiryRecovery(form, data);
+    }
+  } catch (error) {
+    // Static hosting, network failure, or an unreadable API response.
+  }
+  return sendBrowserEnquiryFallback(form, data);
+}
+
 async function sendBrowserEnquiryFallback(form, data) {
   try {
     const endpoint = form.dataset.emailFallback;
-    if (!endpoint) throw new Error('No browser email endpoint');
+    if (!endpoint) throw new Error('No primary endpoint');
     data.set('_url', `${window.location.origin}${window.location.pathname}`);
     const response = await fetch(endpoint, {
-      method: 'POST',
-      signal: AbortSignal.timeout(8000),
-      headers: { Accept: 'application/json' },
-      body: data
+      method: 'POST', signal: AbortSignal.timeout(6000),
+      headers: { Accept: 'application/json' }, body: data
     });
     const result = await response.json();
-    if (!response.ok || (result.success !== true && result.success !== 'true')) {
-      throw new Error('Email provider did not accept the request');
-    }
-    return true;
-  } catch (error) {
-    const panel = document.createElement('div');
-    panel.dataset.enquiryRecovery = '';
-    panel.setAttribute('role', 'region');
-    panel.setAttribute('aria-label', 'Send your enquiry another way');
-    const explanation = document.createElement('p');
-    explanation.textContent = 'We could not confirm delivery. Your details are still here. You can retry using Submit, or send the enquiry yourself using the options below. Check your inbox before retrying to avoid sending it twice.';
-    const email = document.createElement('a');
-    email.textContent = 'Open enquiry in your email app';
-    email.href = `mailto:purestreets0@gmail.com?subject=${encodeURIComponent(data.get('_subject') || 'PureStreets enquiry')}&body=${encodeURIComponent(data.get('message') || '')}`;
-    const label = document.createElement('label');
-    label.className = 'mosque-carousel-form__field';
-    label.textContent = 'Or copy these details and email them to purestreets0@gmail.com:';
-    const details = document.createElement('textarea');
-    details.readOnly = true;
-    details.rows = 8;
-    details.value = data.get('message') || '';
-    label.append(details);
-    panel.append(explanation, email, label);
-    form.querySelector('[data-enquiry-recovery]')?.remove();
-    form.append(panel);
-    return false;
+    if (response.ok && (result.success === true || result.success === 'true')) return true;
+  } catch (error) { /* Try the independent provider next. */ }
+
+  const formId = form.dataset.forminitId;
+  if (formId) {
+    try {
+      const response = await fetch(`https://forminit.com/f/${encodeURIComponent(formId)}`, {
+        method: 'POST', signal: AbortSignal.timeout(6000),
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blocks: [
+          { type: 'sender', properties: { email: data.get('email') } },
+          { type: 'text', name: 'subject', value: data.get('_subject') },
+          { type: 'text', name: 'message', value: data.get('message') }
+        ] })
+      });
+      const result = await response.json();
+      if (response.ok && result.success === true && result.submission?.hashId) return true;
+    } catch (error) { /* Keep all details available for direct email. */ }
   }
+  return showEnquiryRecovery(form, data);
+}
+
+function showEnquiryRecovery(form, data) {
+  const panel = document.createElement('div');
+  panel.dataset.enquiryRecovery = '';
+  panel.setAttribute('role', 'region');
+  panel.setAttribute('aria-label', 'Send your enquiry another way');
+  const explanation = document.createElement('p');
+  explanation.textContent = 'We could not confirm delivery. Your details are still here. You can retry using Submit, or send the enquiry yourself using the options below. Check your inbox before retrying to avoid sending it twice.';
+  const email = document.createElement('a');
+  email.textContent = 'Open enquiry in your email app';
+  email.href = `mailto:purestreets0@gmail.com?subject=${encodeURIComponent(data.get('_subject') || 'PureStreets enquiry')}&body=${encodeURIComponent(data.get('message') || '')}`;
+  const label = document.createElement('label');
+  label.className = 'mosque-carousel-form__field';
+  label.textContent = 'Or copy these details and email them to purestreets0@gmail.com:';
+  const details = document.createElement('textarea');
+  details.readOnly = true;
+  details.rows = 8;
+  details.value = data.get('message') || '';
+  label.append(details);
+  panel.append(explanation, email, label);
+  form.querySelector('[data-enquiry-recovery]')?.remove();
+  form.append(panel);
+  return false;
 }
 
 function initGroupCarouselForms() {
@@ -1599,9 +1608,6 @@ function initGroupCarouselForms() {
       return fallbackData;
     }
 
-    async function sendGroupEmailFallback(payload) {
-      return sendBrowserEnquiryFallback(form, buildGroupEmailFallbackData(payload));
-    }
 
     function showSuccess() {
       if (!submitPending) return;
@@ -1638,27 +1644,7 @@ function initGroupCarouselForms() {
       let sent = false;
 
       try {
-        const response = await fetch(form.action, {
-          signal: AbortSignal.timeout(16000),
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          console.error('Group enquiry API failed:', response.status, await response.text().catch(() => ''));
-          sent = await sendGroupEmailFallback(payload);
-        } else {
-          const result = await response.json();
-          sent = result.ok === true && result.emailOk === true;
-
-          if (!sent) {
-            sent = await sendGroupEmailFallback(payload);
-          }
-        }
-      } catch (error) {
-        console.error('Group enquiry API error:', error);
-        sent = await sendGroupEmailFallback(payload);
+        sent = await submitEnquiryDelivery(form, payload, buildGroupEmailFallbackData(payload));
       } finally {
         if (sent) {
           showSuccess();

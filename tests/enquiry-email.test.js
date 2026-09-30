@@ -8,7 +8,8 @@ async function runTests(source) {
     { name: 'HTTP 200 rejection uses backup', primary: { success: false }, calls: 2, ok: true },
     { name: 'invalid JSON uses backup', invalidJson: true, calls: 2, ok: true },
     { name: 'network timeout uses backup', timeout: true, calls: 2, ok: true },
-    { name: 'missing credentials fails honestly', primary: {}, unconfigured: true, calls: 1, ok: false },
+    { name: 'disabled backup fails honestly', primary: {}, unconfigured: true, calls: 1, ok: false },
+    { name: 'public form works without host configuration', primary: {}, publicDefault: true, calls: 2, ok: true },
     { name: 'backup rejection fails honestly', primary: {}, backupStatus: 401, calls: 2, ok: false },
     { name: 'backup without receipt fails honestly', primary: {}, backupBody: {}, calls: 2, ok: false }
   ];
@@ -28,9 +29,9 @@ async function runTests(source) {
           }
         };
       }
-      check(url === 'https://forminit.com/f/test-form', 'Wrong backup endpoint');
+      check(url === `https://forminit.com/f/${test.publicDefault ? 'ni2r024a56j' : 'test-form'}`, 'Wrong backup endpoint');
       const body = JSON.parse(options.body);
-      check(options.headers['X-API-KEY'] === 'test-key', 'Missing server credential');
+      check(options.headers['X-API-KEY'] === (test.publicDefault ? undefined : 'test-key'), 'Incorrect server credential');
       check(body.blocks[0].properties.email === 'visitor@example.com', 'Lost sender');
       check(body.blocks[2].value === 'Test enquiry' && body.blocks[1].value === 'Test subject', 'Lost enquiry content');
       return { ok: !test.backupStatus, json: async () => test.backupBody || { success: true, submission: { hashId: 'test-receipt' } } };
@@ -38,7 +39,7 @@ async function runTests(source) {
     const mod = { exports: {} };
     new Function('fetch', 'process', 'AbortSignal', 'module', 'console', source)(
       fakeFetch,
-      { env: test.unconfigured ? {} : { FORMINIT_API_KEY: 'test-key', FORMINIT_FORM_ID: 'test-form' } },
+      { env: test.unconfigured ? { FORMINIT_FORM_ID: '' } : test.publicDefault ? {} : { FORMINIT_API_KEY: 'test-key', FORMINIT_FORM_ID: 'test-form' } },
       { timeout: (ms) => ms }, mod, { error() {} }
     );
     let ok = false;

@@ -12,12 +12,12 @@ The server handles the first two layers when available. If it reports both faile
 
 ## Activate Forminit (required)
 
-No Forminit account or form ID was supplied, so layer two is prepared but inactive.
+The public form `ni2r024a56j` is configured in all three pages and as the server default. Deploy these changes and enable its email notification action before testing delivery. No API key is needed for this public form.
 
 1. Create an account and form at https://forminit.com/ . One form can receive all three enquiry types; the submitted subject and message identify the type.
 2. In that form's **Settings → Actions**, enable **Email notifications** and set the recipient to **purestreets0@gmail.com**. Keep the subject and message blocks visible in the notification. Set Reply-to to the sender email using the variable picker.
 3. Copy the form ID from `https://forminit.com/f/FORM_ID`.
-4. For the server routes, set `FORMINIT_FORM_ID` in the hosting dashboard. For a protected form, also set the secret `FORMINIT_API_KEY` there. Never put API keys in HTML or browser JavaScript.
+4. The server defaults to `ni2r024a56j`. Set `FORMINIT_FORM_ID` in the hosting dashboard only to override it. For a protected form, also set the secret `FORMINIT_API_KEY` there. Never put API keys in HTML or browser JavaScript.
 5. To support static hosting or an unavailable API, use a public form and fill `data-forminit-id=""` on the form in `isocs.html`, `mosques.html` and `organisation.html` with that same ID. Public form IDs are not secret. Protected forms cannot be submitted directly from this browser fallback.
 6. Redeploy, submit a labelled test and verify both the Forminit dashboard entry and the notification in the team inbox. Do not assume the email action is enabled merely because Forminit accepted the submission.
 
@@ -39,4 +39,4 @@ Provider acceptance does not prove inbox delivery. Monitor provider notification
 
 ## Rollback
 
-Revert this change to restore the prior Resend integration. Clearing `FORMINIT_FORM_ID` and the public form IDs disables layer two; layers one and three still operate.
+Revert the three-layer change to restore the prior Resend integration. To disable layer two, set `FORMINIT_FORM_ID` explicitly to an empty value (or remove the server default in code) and clear the public form IDs in the HTML; layers one and three still operate.
